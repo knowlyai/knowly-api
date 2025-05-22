@@ -35,8 +35,7 @@ class Test_CreateUserControler:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field name is missing"
-
+        assert response.body == "O campo name está faltando"
 
     def test_create_user_controller_missing_email(self):
         repo = UserRepositoryMock()
@@ -49,7 +48,7 @@ class Test_CreateUserControler:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field email is missing"
+        assert response.body == "O campo email está faltando"
 
     def test_create_user_controller_invalid_email(self):
         repo = UserRepositoryMock()
@@ -63,7 +62,7 @@ class Test_CreateUserControler:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field email is not valid"
+        assert response.body == "O campo email não é válido"
 
     def test_create_user_controller_invalid_name(self):
         repo = UserRepositoryMock()
@@ -77,7 +76,7 @@ class Test_CreateUserControler:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field name is not valid"
+        assert response.body == "O campo name não é válido"
 
 
 

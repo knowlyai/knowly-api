@@ -31,7 +31,7 @@ class Test_DeleteUserController:
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == 'Field user_id is not valid'
+            assert response.body == 'O campo user_id não é válido'
 
     def test_delete_user_controller_missing_parameter(self):
             repo = UserRepositoryMock()
@@ -45,7 +45,7 @@ class Test_DeleteUserController:
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == 'Field user_id is missing'
+            assert response.body == 'O campo user_id está faltando'
 
     def test_delete_user_controller_invalid_user_id(self):
             repo = UserRepositoryMock()
@@ -59,7 +59,7 @@ class Test_DeleteUserController:
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
+            assert response.body == "O campo user_id não está no tipo correto.\nRecebido: int.\nEsperado: str"
 
     def test_delete_user_controller_no_items_found(self):
             repo = UserRepositoryMock()
@@ -73,6 +73,6 @@ class Test_DeleteUserController:
             response = controller(request=request)
 
             assert response.status_code == 404
-            assert response.body == 'No items found for user_id'
+            assert response.body == 'Nenhum item encontrado para user_id'
 
 
