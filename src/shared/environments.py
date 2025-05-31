@@ -71,6 +71,17 @@ class Environments:
             return UserRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
+        
+    @staticmethod
+    def get_transaction_repo() -> ITransactionRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.transaction_repository_mock import TransactionRepositoryMock
+            return TransactionRepositoryMock
+        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.transaction_repository_dynamo import TransactionRepositoryDynamo
+            return TransactionRepositoryDynamo
+        else:
+            raise Exception("No repository found for this stage")
 
     @staticmethod
     def get_observability() -> IObservability:
