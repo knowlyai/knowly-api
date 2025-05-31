@@ -5,20 +5,26 @@ import pytest
 
 class Test_Transaction:
     def test_valid_transaction(self):
-        Transaction(
+        transaction = Transaction(
             id="123e4567-e89b-12d3-a456-426614174000",
             user_id="user-1",
-            plan=PLAN.BR,
+            plan=PLAN.BRONZE,
             value=99.99,
             create_date=1700000000
         )
+
+        assert transaction.id == "123e4567-e89b-12d3-a456-426614174000"
+        assert transaction.user_id == "user-1"
+        assert transaction.plan == PLAN.BRONZE
+        assert transaction.value == 99.99
+        assert transaction.create_date == 1700000000
 
     def test_id_is_none(self):
         with pytest.raises(EntityError):
             Transaction(
                 id=None,
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date=1700000000
             )
@@ -28,7 +34,7 @@ class Test_Transaction:
             Transaction(
                 id=123,
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date=1700000000
             )
@@ -38,7 +44,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id=None,
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date=1700000000
             )
@@ -48,7 +54,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id=123,
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date=1700000000
             )
@@ -58,7 +64,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id="user-1",
-                plan="BRONZE",
+                plan='INVALID_PLAN',
                 value=99.99,
                 create_date=1700000000
             )
@@ -68,7 +74,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value="99.99",
                 create_date=1700000000
             )
@@ -78,7 +84,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=-10.0,
                 create_date=1700000000
             )
@@ -88,7 +94,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date="1700000000"
             )
@@ -98,7 +104,7 @@ class Test_Transaction:
             Transaction(
                 id="123e4567-e89b-12d3-a456-426614174000",
                 user_id="user-1",
-                plan=PLAN.BR,
+                plan=PLAN.BRONZE,
                 value=99.99,
                 create_date=-1
             )
