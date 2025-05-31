@@ -4,6 +4,7 @@ import os
 from src.shared.domain.observability.observability_interface import IObservability
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.transaction_repository_interface import ITransactionRepository
 
 
 class STAGE(Enum):
