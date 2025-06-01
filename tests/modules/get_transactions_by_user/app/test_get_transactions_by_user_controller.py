@@ -1,39 +1,76 @@
 import pytest
 
-from src.modules.get_transactions_by_user.app.get_transactions_by_user_controller import GetTransactionsByUserController
-from src.modules.get_transactions_by_user.app.get_transactions_by_user_usecase import GetTransactionsByUserUsecase
+from src.modules.get_transactions_by_user.app.get_transactions_by_user_controller import (
+    GetTransactionsByUserController
+)
+from src.modules.get_transactions_by_user.app.get_transactions_by_user_usecase import (
+    GetTransactionsByUserUsecase
+)
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
+from src.shared.infra.external.observability.observability_mock import ObservabilityMock
 from src.shared.infra.repositories.transaction_repository_mock import TransactionRepositoryMock
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
 
+observability = ObservabilityMock(module_name="get_transactions_by_user")
+
+
 class Test_GetTransactionsByUserController:
+
+    def test_get_transactions_by_user_success(self):
+        repo = TransactionRepositoryMock()
+        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
+        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+
+        first_tx = repo.transactions[0]
+        request = HttpRequest(query_params={"user_id": first_tx.user_id})
+
+        response = controller(request=request)
+
+        assert response.status_code == 200
+        body = response.body
+        assert isinstance(body, list)
+        assert any(tx["user_id"] == first_tx.user_id for tx in body)
+        sample = body[0]
+        assert "id" in sample
+        assert "plan" in sample
+        assert "value" in sample
+        assert "create_date" in sample
+
     def test_get_transactions_by_user_missing_user_id(self):
-        repo_trans = TransactionRepositoryMock()
-        repo_user = UserRepositoryMock()
-        usecase = GetTransactionsByUserUsecase(repo_trans, repo_user)
-        controller = GetTransactionsByUserController(usecase)
+        repo = TransactionRepositoryMock()
+        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
+        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
 
-        request = HttpRequest(body={})
-
+        request = HttpRequest(query_params={})
         response = controller(request=request)
 
         assert response.status_code == 400
+        assert response.body == "Field user_id is missing"
 
-    def test_get_transactions_by_user_generic_exception_leads_to_500(self):
-        class BrokenUsecase(GetTransactionsByUserUsecase):
-            def __call__(self, user_id):
-                raise Exception("Erro inesperado no layer de negócio")
+    def test_get_transactions_by_user_invalid_user_id_type(self):
+        repo = TransactionRepositoryMock()
+        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
+        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
 
-        repo_trans = TransactionRepositoryMock()
-        repo_user = UserRepositoryMock()
-        usecase = BrokenUsecase(repo_trans, repo_user)
-        controller = GetTransactionsByUserController(usecase)
-
-        valid_user_id = repo_user.users[0].user_id
-        request = HttpRequest(body={"user_id": valid_user_id})
-
+        request = HttpRequest(query_params={"user_id": 123})
         response = controller(request=request)
 
-        assert response.status_code == 500
+        assert response.status_code == 400
+        expected = (
+            "Field user_id isn't in the right type.\n"
+            " Received: int.\n"
+            " Expected: str"
+        )
+        assert response.body == expected
+
+    def test_get_transactions_by_user_entity_error_empty(self):
+        repo = TransactionRepositoryMock()
+        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
+        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+
+        request = HttpRequest(query_params={"user_id": ""})
+        response = controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == "Field user_id is not valid"
