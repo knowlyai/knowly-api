@@ -26,8 +26,8 @@ class Test_GetSubscriptionController:
         body = response.body
         assert body["id"] == existing.id
         assert body["user_id"] == existing.user_id
-        assert body["previous_plan"] == existing.previous_plan.value
-        assert body["new_plan"] == existing.new_plan.value
+        assert body["previous_plan"] == "SILVER"
+        assert body["new_plan"] == "GOLD"
         assert body["update_date"] == existing.update_date
         assert "message" in body and isinstance(body["message"], str)
 

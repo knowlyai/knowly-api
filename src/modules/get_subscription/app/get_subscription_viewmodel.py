@@ -11,6 +11,7 @@ class GetSubscriptionViewmodel:
     def __init__(self, subscription: Subscription):
         self.id = subscription.id
         self.user_id = subscription.user_id
+        # aqui usava .name
         self.previous_plan = subscription.previous_plan.name
         self.new_plan = subscription.new_plan.name
         self.update_date = subscription.update_date
