@@ -1,18 +1,30 @@
-import abc
 import re
-
-from src.shared.domain.enums.state_enum import STATE
+import uuid
+from typing import Optional
+from src.shared.domain.enums.plan_enum import PlanEnum
+from src.shared.domain.enums.type_enum import PTypeEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 
 
-class User(abc.ABC):
+class User:
+    user_id: str
     name: str
     email: str
-    state: STATE
-    MIN_NAME_LENGTH = 2
-    user_id: int
+    cellphone: str
+    p_type: PTypeEnum
+    cpf_cnpj: str
+    address: str
+    cep: str
+    birthdate: Optional[int]
+    plan: PlanEnum
+    creation_date: int
+    update_date: int
+    MIN_NAME_LENGTH = 3
 
-    def __init__(self, name: str, email: str, state: STATE, user_id: int = None):
+    def __init__(self, user_id: str, name: str, email: str, cellphone: str, p_type: PTypeEnum, cpf_cnpj: str, address: str, cep: str, plan: PlanEnum, creation_date: int, update_date: int, birthdate: Optional[int] = None):
+        if not User.validate_user_id(user_id):
+            raise EntityError("user_id")
+
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -21,18 +33,9 @@ class User(abc.ABC):
             raise EntityError("email")
         self.email = email
 
-        if type(user_id) == int:
-            if user_id < 0:
-                raise EntityError("user_id")
-
-        if type(user_id) != int and user_id is not None:
-            raise EntityError("user_id")
 
         self.user_id = user_id
 
-        if type(state) != STATE:
-            raise EntityError("state")
-        self.state = state
 
     @staticmethod
     def validate_name(name: str) -> bool:
@@ -54,7 +57,22 @@ class User(abc.ABC):
 
         return bool(re.fullmatch(regex, email))
 
+    @staticmethod
+    def validate_user_id(user_id: str) -> bool:
+        if user_id is None or type(user_id) != str:
+            return False
+        try:
+            uuid.UUID(user_id)
+            return True
+        except ValueError:
+            return False
 
+    @staticmethod
+    def validate_cellphone(cellphone: str) -> bool:
+        if cellphone is None or type(cellphone) != str:
+            return False
+        regex = re.compile(r"(?:(\+|00)?(55)\s?)?\(?(\d{2})\)?\s?(|\d{2})(|-)?(9\d|[2-9])\d{3}[-|.\s]?(\d{4})")
+        return bool(re.fullmatch(regex, cellphone))
 
     def __repr__(self):
-        return f"User(name={self.name}, email={self.email}, user_id={self.user_id}, state={self.state})"
+        return f"User(name={self.name}, email={self.email}, user_id={self.user_id})"
