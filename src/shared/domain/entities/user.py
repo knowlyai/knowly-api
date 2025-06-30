@@ -1,6 +1,7 @@
 import re
 import uuid
 from typing import Optional
+
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.type_enum import PTypeEnum
 from src.shared.helpers.errors.domain_errors import EntityError
