@@ -63,7 +63,7 @@ class User:
             raise EntityError("creation_date")
         self.creation_date = creation_date
 
-        if type(update_date) != int or update_date <= creation_date:
+        if type(update_date) != int or update_date < creation_date:
             raise EntityError("update_date")
         self.update_date = update_date
 
