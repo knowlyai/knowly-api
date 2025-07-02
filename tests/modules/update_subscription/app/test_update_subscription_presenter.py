@@ -35,7 +35,7 @@ class Test_UpdateSubscriptionPresenter:
                 "timeEpoch": 1717252800000
             },
             "body": json.dumps({
-                "id": "sub-1",
+                "id": "11111111-1111-1111-1111-111111111111",
                 "new_plan": "GOLD"
             }),
             "pathParameters": None,
@@ -47,7 +47,7 @@ class Test_UpdateSubscriptionPresenter:
         assert response["statusCode"] == 200
 
         body = json.loads(response["body"])
-        assert body["id"] == "sub-1"
+        assert body["id"] == "11111111-1111-1111-1111-111111111111"
         assert body["previous_plan"] == "SILVER"
         assert body["new_plan"] == "GOLD"
         assert "update_date" in body  

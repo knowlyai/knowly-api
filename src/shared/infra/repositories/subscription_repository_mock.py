@@ -5,29 +5,25 @@ from src.shared.domain.enums.plan_enum import PLAN
 from src.shared.domain.repositories.subscription_repository_interface import ISubscriptionRepository
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
-
 class SubscriptionRepositoryMock(ISubscriptionRepository):
-    subscriptions: List[Subscription]
-    subscription_counter: int
-
     def __init__(self):
-        self.subscriptions = [
+        self.subscriptions: List[Subscription] = [
             Subscription(
-                id="sub-1",
+                id="11111111-1111-1111-1111-111111111111",
                 user_id="user-1",
                 previous_plan=PLAN.BRONZE,
                 new_plan=PLAN.SILVER,
                 update_date=1700000000
             ),
             Subscription(
-                id="sub-2",
+                id="22222222-2222-2222-2222-222222222222",
                 user_id="user-2",
                 previous_plan=PLAN.SILVER,
                 new_plan=PLAN.GOLD,
                 update_date=1700003600
             ),
             Subscription(
-                id="sub-3",
+                id="33333333-3333-3333-3333-333333333333",
                 user_id="user-3",
                 previous_plan=PLAN.BRONZE,
                 new_plan=PLAN.GOLD,
@@ -46,6 +42,7 @@ class SubscriptionRepositoryMock(ISubscriptionRepository):
         return self.subscriptions
 
     def create_subscription(self, new_subscription: Subscription) -> Subscription:
+        new_subscription.id = "44444444-4444-4444-4444-444444444444"
         self.subscriptions.append(new_subscription)
         self.subscription_counter += 1
         return new_subscription
@@ -62,7 +59,6 @@ class SubscriptionRepositoryMock(ISubscriptionRepository):
                 sub.previous_plan = sub.new_plan
                 sub.new_plan = new_plan
                 return sub
-
         raise NoItemsFound("subscription_id")
 
     def get_subscription_counter(self) -> int:
