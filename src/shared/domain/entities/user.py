@@ -3,7 +3,7 @@ import uuid
 from typing import Optional
 
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 
 
@@ -180,5 +180,19 @@ class User:
         cep_regex = re.compile(r"(^\d{5})-?(\d{3}$)")
         return bool(re.fullmatch(cep_regex, cep))
 
-    def __repr__(self):
-        return f"User(name={self.name}, email={self.email}, user_id={self.user_id})"
+    def __to_dict__(self):
+        return {
+            "user_id": self.user_id,
+            "name": self.name,
+            "email": self.email,
+            "cellphone": self.cellphone,
+            "p_type": self.p_type.value,
+            "cpf_cnpj": self.cpf_cnpj,
+            "address": self.address,
+            "cep": self.cep,
+            "birthdate": self.birthdate,
+            "plan": self.plan.value,
+            "creation_date": self.creation_date,
+            "update_date": self.update_date
+        }
+

@@ -3,7 +3,7 @@ from typing import Optional
 
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import MinorAgeError
 

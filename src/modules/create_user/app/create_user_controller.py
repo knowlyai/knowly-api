@@ -1,5 +1,5 @@
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter, EnumError
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, MinorAgeError

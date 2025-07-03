@@ -1,6 +1,6 @@
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 import pytest
 
@@ -443,7 +443,7 @@ class TestUser:
                  cep="04111111",
                  plan=PlanEnum.GO,
                  creation_date=1749079322,
-                 update_date=1749079322,  # Same as creation_date
+                 update_date=1749079321,  # Same as creation_date
                  cpf_cnpj="37973280871",
                  birthdate=1022368922)
 

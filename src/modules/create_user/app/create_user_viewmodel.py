@@ -2,7 +2,7 @@ from typing import Optional
 
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 
 
 class CreateUserViewmodel:
@@ -20,6 +20,7 @@ class CreateUserViewmodel:
     update_date: int
 
     def __init__(self, user: User):
+        self.user = user
         self.user_id = user.user_id
         self.name = user.name
         self.email = user.email
@@ -36,19 +37,8 @@ class CreateUserViewmodel:
 
     def to_dict(self):
         return {
-            'user':{
-                'user_id': self.user_id,
-                'name': self.name,
-                'email': self.email,
-                'cellphone': self.cellphone,
-                'p_type': self.p_type.value,
-                'cpf_cnpj': self.cpf_cnpj,
-                'address': self.address,
-                'cep': self.cep,
-                'birthdate': self.birthdate,
-                'plan': self.plan.value,
-                'creation_date': self.creation_date,
-                'update_date': self.update_date
-            },
+            'user':
+                self.user.__to_dict__()
+            ,
             'message': "the user was created successfully"
         }

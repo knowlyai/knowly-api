@@ -2,7 +2,7 @@ import pytest
 import time
 from src.modules.create_user.app.create_user_usecase import CreateUserUseCase
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import MinorAgeError
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock

@@ -1,7 +1,7 @@
 from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
-from src.shared.domain.enums.type_enum import PTypeEnum
+from src.shared.domain.enums.ptype_enum import PTypeEnum
 
 
 class TestCreateUserViewModel:
@@ -22,6 +22,8 @@ class TestCreateUserViewModel:
         )
         user_viewmodel = CreateUserViewmodel(user=user).to_dict()
 
+        print(user_viewmodel)
+        print('teste')
         expected = {
             "user": {
                     'user_id': "50b0f552-cae5-4cf8-9cee-ff832407f738",
