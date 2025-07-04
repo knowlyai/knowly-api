@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
@@ -109,10 +109,19 @@ class UserRepositoryMock(IUserRepository):
 
         raise NoItemsFound("user_id")
 
-    def update_user(self, user_id: str, new_name: str) -> User:
+    def update_user(self, user_id: str, new_name: Optional[str] = None, new_email: Optional[str] = None, new_cellphone: Optional[str] = None, new_address: Optional[str] = None, new_cep: Optional[str] = None ) -> User:
         for user in self.users:
             if user.user_id == user_id:
-                user.name = new_name
+                if new_name is not None:
+                    user.name = new_name
+                if new_email is not None:
+                    user.email = new_email
+                if new_cellphone is not None:
+                    user.cellphone = new_cellphone
+                if new_address is not None:
+                    user.address = new_address
+                if new_cep is not None:
+                    user.cep = new_cep
                 return user
 
         raise NoItemsFound("user_id")

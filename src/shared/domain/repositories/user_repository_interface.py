@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from src.shared.domain.entities.user import User
 
@@ -25,7 +25,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, user_id: str, new_name: str) -> User:
+    def update_user(self, user_id: str, new_name: Optional[str], new_email: Optional[str], new_cellphone: Optional[str], new_address: Optional[str], new_cep: Optional[str]) -> User:
         """
         If user not found raise NoItemsFound
         """

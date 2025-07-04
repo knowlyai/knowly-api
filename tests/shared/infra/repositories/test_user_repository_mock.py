@@ -66,10 +66,19 @@ class TestUserRepositoryMock:
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        user = repo.update_user("fdddafb9-687a-4982-a025-54fb12671932", "Maria da div")
+        user = repo.update_user("fdddafb9-687a-4982-a025-54fb12671932", "Maria da div", new_email="email@email.com", new_cellphone="11 99999-9999", new_address="Rua Nova, 123", new_cep="12345-678")
 
         assert user.name == "Maria da div"
-        assert repo.users[0].name == "Maria da div"
+        assert user.email == "email@email.com"
+        assert user.cellphone == "11 99999-9999"
+        assert user.address == "Rua Nova, 123"
+        assert user.cep == "12345-678"
+
+    def test_update_user_one_parameter(self):
+        repo = UserRepositoryMock()
+        user = repo.update_user("5042b518-83ca-4cbf-84fc-c992da2506e5", new_name="Instituto Mauá de Tecnologia Atualizado")
+
+        assert user.name == "Instituto Mauá de Tecnologia Atualizado"
 
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
