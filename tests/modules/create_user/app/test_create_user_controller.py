@@ -41,7 +41,7 @@ class TestCreateUserController:
         assert response.body['user']['user_id'] == '65443594-1f8d-4e2f-933e-f932baa5656f'
         assert response.body['user']['name'] == 'Virginia Cruz'
         assert response.body['user']['email'] == 'joao@teste.com'
-        assert response.body['message'] == "the user was created successfully"
+        assert response.body['message'] == "Usuário criado com sucesso"
 
     # Testes de parâmetros obrigatórios ausentes
     def test_create_user_controller_missing_user_id(self, create_user_usecase, valid_request_data):

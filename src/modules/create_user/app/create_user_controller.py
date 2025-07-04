@@ -6,7 +6,6 @@ from src.shared.helpers.errors.usecase_errors import NoItemsFound, MinorAgeError
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from src.shared.helpers.external_interfaces.http_codes import NotFound, BadRequest, InternalServerError, Created
 from .create_user_usecase import CreateUserUseCase
-from .create_user_viewmodel import CreateUserViewmodel
 
 
 class CreateUserController:
@@ -85,9 +84,12 @@ class CreateUserController:
                 plan=plan
             )
 
-            viewmodel = CreateUserViewmodel(user)
+            viewmodel = {
+                'user': user.__to_dict__(),
+                'message': 'Usuário criado com sucesso'
+            }
 
-            return Created(viewmodel.to_dict())
+            return Created(viewmodel)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)

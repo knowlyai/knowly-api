@@ -74,5 +74,5 @@ class TestGetUserPresenter:
         assert json.loads(response["body"])['user']["update_date"] == 1749079323
         assert json.loads(response["body"])['user']["birthdate"] == 1022368922
         assert json.loads(response["body"])['user']["user_id"] == "fdddafb9-687a-4982-a025-54fb12671932"
-        assert json.loads(response["body"])['message'] == "the user was retrieved successfully"
+        assert json.loads(response["body"])['message'] == "Usuário encontrado com sucesso"
 

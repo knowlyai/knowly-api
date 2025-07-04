@@ -1,11 +1,9 @@
-from .get_user_usecase import GetUserUseCase
-from .get_user_viewmodel import GetUserViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
-
+from .get_user_usecase import GetUserUseCase
 
 
 class GetUserController:
@@ -25,9 +23,12 @@ class GetUserController:
                 user_id=request.data.get('user_id')
             )
 
-            viewmodel = GetUserViewmodel(user)
+            viewmodel = {
+                'user': user.__to_dict__(),
+                'message': 'Usuário encontrado com sucesso'
+            }
             
-            response = OK(viewmodel.to_dict())
+            response = OK(viewmodel)
             return response
 
         except NoItemsFound as err:

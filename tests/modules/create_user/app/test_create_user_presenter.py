@@ -52,7 +52,7 @@ class TestCreateUserPresenter:
 
         assert response["statusCode"] == 201
         response_body = json.loads(response["body"])
-        assert response_body["message"] == "the user was created successfully"
+        assert response_body["message"] == "Usuário criado com sucesso"
         assert response_body["user"]["user_id"] == "550e8400-e29b-41d4-a716-446655440000"
         assert response_body["user"]["name"] == "João Silva Santos"
         assert response_body["user"]["email"] == "joao.silva@teste.com"
@@ -90,7 +90,7 @@ class TestCreateUserPresenter:
 
         assert response["statusCode"] == 201
         response_body = json.loads(response["body"])
-        assert response_body["message"] == "the user was created successfully"
+        assert response_body["message"] == "Usuário criado com sucesso"
         assert response_body["user"]["user_id"] == "650e8400-e29b-41d4-a716-446655440001"
 
     def test_create_user_person_juridica(self):
