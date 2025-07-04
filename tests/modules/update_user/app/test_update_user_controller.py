@@ -1,5 +1,5 @@
 from src.modules.update_user.app.update_user_controller import UpdateUserController
-from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
+from src.modules.update_user.app.update_user_usecase import UpdateUserUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
@@ -7,7 +7,7 @@ from src.shared.infra.repositories.user_repository_mock import UserRepositoryMoc
 class Test_UpdateUserController:
     def test_update_user_controller(self):
         repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+        usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
@@ -26,7 +26,7 @@ class Test_UpdateUserController:
 
     def test_update_user_controller_missing_user_id(self):
         repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+        usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
@@ -40,7 +40,7 @@ class Test_UpdateUserController:
 
     def test_update_user_controller_missing_new_name(self):
         repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+        usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
@@ -54,7 +54,7 @@ class Test_UpdateUserController:
 
     def test_update_user_controller_invalid_user_id(self):
         repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+        usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
@@ -69,7 +69,7 @@ class Test_UpdateUserController:
 
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+        usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
