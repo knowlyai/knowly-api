@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from src.shared.domain.entities.user import User
@@ -66,7 +68,7 @@ class TestUserRepositoryMock:
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        user = repo.update_user("fdddafb9-687a-4982-a025-54fb12671932", "Maria da div", new_email="email@email.com", new_cellphone="11 99999-9999", new_address="Rua Nova, 123", new_cep="12345-678")
+        user = repo.update_user("fdddafb9-687a-4982-a025-54fb12671932", update_date=int(time.time()), new_name="Maria da div", new_email="email@email.com", new_cellphone="11 99999-9999", new_address="Rua Nova, 123", new_cep="12345-678")
 
         assert user.name == "Maria da div"
         assert user.email == "email@email.com"
@@ -76,7 +78,7 @@ class TestUserRepositoryMock:
 
     def test_update_user_one_parameter(self):
         repo = UserRepositoryMock()
-        user = repo.update_user("5042b518-83ca-4cbf-84fc-c992da2506e5", new_name="Instituto Mauá de Tecnologia Atualizado")
+        user = repo.update_user("5042b518-83ca-4cbf-84fc-c992da2506e5", new_name="Instituto Mauá de Tecnologia Atualizado", update_date=int(time.time()))
 
         assert user.name == "Instituto Mauá de Tecnologia Atualizado"
 
