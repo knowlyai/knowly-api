@@ -4,23 +4,18 @@ from src.modules.get_transactions_by_user.app.get_transactions_by_user_controlle
     GetTransactionsByUserController
 )
 from src.modules.get_transactions_by_user.app.get_transactions_by_user_usecase import (
-    GetTransactionsByUserUsecase
+    GetTransactionsByUserUseCase
 )
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
-from src.shared.infra.external.observability.observability_mock import ObservabilityMock
 from src.shared.infra.repositories.transaction_repository_mock import TransactionRepositoryMock
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-
-
-observability = ObservabilityMock(module_name="get_transactions_by_user")
 
 
 class Test_GetTransactionsByUserController:
 
     def test_get_transactions_by_user_success(self):
         repo = TransactionRepositoryMock()
-        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
-        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+        usecase = GetTransactionsByUserUseCase(repo=repo)
+        controller = GetTransactionsByUserController(usecase=usecase)
 
         first_tx = repo.transactions[0]
         request = HttpRequest(query_params={"user_id": first_tx.user_id})
@@ -39,8 +34,8 @@ class Test_GetTransactionsByUserController:
 
     def test_get_transactions_by_user_missing_user_id(self):
         repo = TransactionRepositoryMock()
-        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
-        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+        usecase = GetTransactionsByUserUseCase(repo=repo)
+        controller = GetTransactionsByUserController(usecase=usecase)
 
         request = HttpRequest(query_params={})
         response = controller(request=request)
@@ -50,8 +45,8 @@ class Test_GetTransactionsByUserController:
 
     def test_get_transactions_by_user_invalid_user_id_type(self):
         repo = TransactionRepositoryMock()
-        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
-        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+        usecase = GetTransactionsByUserUseCase(repo=repo)
+        controller = GetTransactionsByUserController(usecase=usecase)
 
         request = HttpRequest(query_params={"user_id": 123})
         response = controller(request=request)
@@ -66,8 +61,8 @@ class Test_GetTransactionsByUserController:
 
     def test_get_transactions_by_user_entity_error_empty(self):
         repo = TransactionRepositoryMock()
-        usecase = GetTransactionsByUserUsecase(repo=repo, observability=observability)
-        controller = GetTransactionsByUserController(usecase=usecase, observability=observability)
+        usecase = GetTransactionsByUserUseCase(repo=repo)
+        controller = GetTransactionsByUserController(usecase=usecase)
 
         request = HttpRequest(query_params={"user_id": ""})
         response = controller(request=request)

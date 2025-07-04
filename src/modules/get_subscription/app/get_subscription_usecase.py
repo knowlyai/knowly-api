@@ -4,7 +4,7 @@ from src.shared.domain.repositories.subscription_repository_interface import ISu
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 
-class GetUserSubscriptionsUsecase:
+class GetUserSubscriptionsUseCase:
     def __init__(self, repo: ISubscriptionRepository, observability=None):
         self.repo = repo
 
@@ -14,5 +14,5 @@ class GetUserSubscriptionsUsecase:
 
         subs = self.repo.get_all_by_user(user_id)
         if not subs:
-            raise NoItemsFound(f"No subscriptions found for user {user_id}")
+            raise NoItemsFound(f"Nenhuma assinatura encontrada para o usuário {user_id}")
         return subs

@@ -1,10 +1,10 @@
 from .get_transactions_by_user_controller import GetTransactionsByUserController
-from .get_transactions_by_user_usecase import GetTransactionsByUserUsecase
+from .get_transactions_by_user_usecase import GetTransactionsByUserUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
 repo = Environments.get_transaction_repo()()
-usecase = GetTransactionsByUserUsecase(repo=repo)
+usecase = GetTransactionsByUserUseCase(repo=repo)
 controller = GetTransactionsByUserController(usecase=usecase)
 
 def lambda_handler(event, context):

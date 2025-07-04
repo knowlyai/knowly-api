@@ -6,7 +6,7 @@ from src.shared.domain.repositories.user_repository_interface import IUserReposi
 from src.shared.helpers.errors.domain_errors import EntityError
 
 
-class CreateUserUsecase:
+class CreateUserUseCase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 

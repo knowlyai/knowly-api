@@ -1,5 +1,5 @@
 from typing import List
-from .get_user_subscriptions_usecase import GetUserSubscriptionsUsecase
+from .get_subscription_usecase import GetUserSubscriptionsUseCase
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -8,8 +8,8 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 
 class GetUserSubscriptionsController:
 
-    def __init__(self, usecase: GetUserSubscriptionsUsecase, observability=None):
-        self.usecase = usecase
+    def __init__(self, usecase: GetUserSubscriptionsUseCase):
+        self.get_subscription_usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -17,18 +17,26 @@ class GetUserSubscriptionsController:
             if user_id is None:
                 raise MissingParameters("user_id")
             if not isinstance(user_id, str):
-                raise WrongTypeParameter("user_id", "str", type(user_id).__name__)
+                raise WrongTypeParameter(
+                    fieldName="user_id",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=type(user_id).__name__,
+                )
             if not user_id.strip():
                 raise EntityError("user_id")
 
-            subscriptions = self.usecase(user_id=user_id)  
-            result = [s.to_dict() for s in subscriptions]
+            subscriptions = self.get_subscription_usecase(user_id=user_id)
+            result = [subscription.to_dict() for subscription in subscriptions]
 
             return OK(result)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
-        except (MissingParameters, WrongTypeParameter, EntityError) as err:
+        except MissingParameters as err:
+            return BadRequest(body=err.message)
+        except WrongTypeParameter as err:
+            return BadRequest(body=err.message)
+        except EntityError as err:
             return BadRequest(body=err.message)
         except Exception as err:
             return InternalServerError(body=str(err))

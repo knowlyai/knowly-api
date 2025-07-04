@@ -1,10 +1,10 @@
 from .get_subscription_controller import GetSubscriptionController
-from .get_subscription_usecase import GetSubscriptionUsecase
+from .get_subscription_usecase import GetSubscriptionUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
 repo = Environments.get_subscription_repo()()
-usecase = GetSubscriptionUsecase(repo=repo)
+usecase = GetSubscriptionUseCase(repo=repo)
 controller = GetSubscriptionController(usecase=usecase)
 
 def lambda_handler(event, context):

@@ -1,7 +1,7 @@
 import pytest
 
 from src.modules.update_subscription.app.update_subscription_controller import UpdateSubscriptionController
-from src.modules.update_subscription.app.update_subscription_usecase import UpdateSubscriptionUsecase
+from src.modules.update_subscription.app.update_subscription_usecase import UpdateSubscriptionUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.subscription_repository_mock import SubscriptionRepositoryMock
 from src.shared.helpers.errors.usecase_errors import NoItemsFound

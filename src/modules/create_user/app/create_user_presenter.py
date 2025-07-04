@@ -1,10 +1,10 @@
 from .create_user_controller import CreateUserController
-from .create_user_usecase import CreateUserUsecase
+from .create_user_usecase import CreateUserUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
 repo = Environments.get_user_repo()()
-usecase = CreateUserUsecase(repo)
+usecase = CreateUserUseCase(repo)
 controller = CreateUserController(usecase)
 
 def lambda_handler(event, context):

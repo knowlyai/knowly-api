@@ -1,7 +1,7 @@
 import pytest
 
 from src.modules.get_subscription.app.get_subscription_controller import GetSubscriptionController
-from src.modules.get_subscription.app.get_subscription_usecase import GetSubscriptionUsecase
+from src.modules.get_subscription.app.get_subscription_usecase import GetSubscriptionUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.external.observability.observability_mock import ObservabilityMock
 from src.shared.infra.repositories.subscription_repository_mock import SubscriptionRepositoryMock
@@ -14,7 +14,7 @@ observability = ObservabilityMock(module_name="get_subscription")
 class Test_GetSubscriptionController:
     def test_get_subscription_controller(self):
         repo = SubscriptionRepositoryMock()
-        usecase = GetSubscriptionUsecase(repo=repo, observability=observability)
+        usecase = GetSubscriptionUseCase(repo=repo, observability=observability)
         controller = GetSubscriptionController(usecase=usecase, observability=observability)
 
         existing = repo.subscriptions[1]
@@ -33,7 +33,7 @@ class Test_GetSubscriptionController:
 
     def test_get_subscription_controller_missing_parameters(self):
         repo = SubscriptionRepositoryMock()
-        usecase = GetSubscriptionUsecase(repo=repo, observability=observability)
+        usecase = GetSubscriptionUseCase(repo=repo, observability=observability)
         controller = GetSubscriptionController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={})
@@ -45,7 +45,7 @@ class Test_GetSubscriptionController:
 
     def test_get_subscription_controller_wrong_type_parameter(self):
         repo = SubscriptionRepositoryMock()
-        usecase = GetSubscriptionUsecase(repo=repo, observability=observability)
+        usecase = GetSubscriptionUseCase(repo=repo, observability=observability)
         controller = GetSubscriptionController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={"id": 123})
@@ -62,7 +62,7 @@ class Test_GetSubscriptionController:
 
     def test_get_subscription_controller_entity_error(self):
         repo = SubscriptionRepositoryMock()
-        usecase = GetSubscriptionUsecase(repo=repo, observability=observability)
+        usecase = GetSubscriptionUseCase(repo=repo, observability=observability)
         controller = GetSubscriptionController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={"id": ""})
@@ -74,7 +74,7 @@ class Test_GetSubscriptionController:
 
     def test_get_subscription_controller_no_items_found(self):
         repo = SubscriptionRepositoryMock()
-        usecase = GetSubscriptionUsecase(repo=repo, observability=observability)
+        usecase = GetSubscriptionUseCase(repo=repo, observability=observability)
         controller = GetSubscriptionController(usecase=usecase, observability=observability)
 
         request = HttpRequest(query_params={"id": "nonexistent-id"})

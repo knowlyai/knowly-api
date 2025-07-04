@@ -1,5 +1,5 @@
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
-from .create_user_usecase import CreateUserUsecase
+from .create_user_usecase import CreateUserUseCase
 from .create_user_viewmodel import CreateUserViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
@@ -9,8 +9,8 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 
 class CreateUserController:
 
-    def __init__(self, usecase: CreateUserUsecase):
-        self.CreateUserUsecase = usecase
+    def __init__(self, usecase: CreateUserUseCase):
+        self.CreateUserUseCase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -19,7 +19,7 @@ class CreateUserController:
             if request.data.get('email') is None:
                 raise MissingParameters('email')
 
-            user = self.CreateUserUsecase(
+            user = self.CreateUserUseCase(
                 name=request.data.get('name'),
                 email=request.data.get('email')
             )

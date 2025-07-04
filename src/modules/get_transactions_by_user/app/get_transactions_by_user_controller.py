@@ -1,4 +1,4 @@
-from .get_transactions_by_user_usecase import GetTransactionsByUserUsecase
+from .get_transactions_by_user_usecase import GetTransactionsByUserUseCase
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -7,7 +7,7 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 
 class GetTransactionsByUserController:
 
-    def __init__(self, usecase: GetTransactionsByUserUsecase, observability=None):
+    def __init__(self, usecase: GetTransactionsByUserUseCase):
         self.usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
@@ -25,24 +25,26 @@ class GetTransactionsByUserController:
                 raise EntityError("user_id")
 
             transactions = self.usecase(user_id=user_id)
-
-            result = []
-            for t in transactions:
-                result.append({
+            result = [
+                {
                     "id": t.id,
                     "user_id": t.user_id,
                     "plan": t.plan.name,
                     "value": t.value,
                     "create_date": t.create_date
-                })
+                }
+                for t in transactions
+            ]
 
             return OK(result)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
-
-        except (MissingParameters, WrongTypeParameter, EntityError) as err:
+        except MissingParameters as err:
             return BadRequest(body=err.message)
-
+        except WrongTypeParameter as err:
+            return BadRequest(body=err.message)
+        except EntityError as err:
+            return BadRequest(body=err.message)
         except Exception as err:
             return InternalServerError(body=str(err))
