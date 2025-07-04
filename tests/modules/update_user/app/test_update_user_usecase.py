@@ -1,4 +1,5 @@
 import pytest
+import time
 
 from src.modules.update_user.app.update_user_usecase import UpdateUserUseCase
 from src.shared.helpers.errors.domain_errors import EntityError
@@ -161,3 +162,25 @@ class TestUpdateUserUsecase:
         )
         assert updated_user.email == "email.novo@teste.com"
         assert updated_user.name == "Enzo Sakamoto"
+
+    def test_update_user_usecase_update_date_is_updated(self):
+        repo = UserRepositoryMock()
+        usecase = UpdateUserUseCase(repo)
+
+        # Obter o update_date original do usuário
+        original_user = repo.get_user("fdddafb9-687a-4982-a025-54fb12671932")
+        original_update_date = original_user.update_date
+
+        # Aguardar um momento para garantir que o timestamp seja diferente
+        time.sleep(1)
+
+        # Executar a atualização
+        updated_user = usecase(
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            new_name="Nome Atualizado"
+        )
+
+        # Verificar se o update_date foi atualizado
+        assert updated_user.update_date > original_update_date
+        assert updated_user.update_date <= int(time.time())  # Não deve ser futuro
+        assert updated_user.name == "Nome Atualizado"

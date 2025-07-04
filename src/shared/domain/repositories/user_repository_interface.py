@@ -25,7 +25,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, user_id: str, new_name: Optional[str], new_email: Optional[str], new_cellphone: Optional[str], new_address: Optional[str], new_cep: Optional[str]) -> User:
+    def update_user(self, user_id: str, update_date: int, new_name: Optional[str], new_email: Optional[str], new_cellphone: Optional[str], new_address: Optional[str], new_cep: Optional[str]) -> User:
         """
         If user not found raise NoItemsFound
         """

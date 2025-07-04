@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from src.shared.domain.entities.user import User
@@ -29,8 +30,11 @@ class UpdateUserUseCase:
         if new_cep is not None and not User.validate_cep(new_cep):
             raise EntityError("new_cep")
 
+        time_now = int(time.time())
+
         updated_user = self.repo.update_user(
             user_id=user_id,
+            update_date=time_now,
             new_name=new_name,
             new_email=new_email,
             new_cellphone=new_cellphone,

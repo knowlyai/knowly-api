@@ -3,7 +3,7 @@ import json
 from src.modules.update_user.app.update_user_presenter import lambda_handler
 
 
-class Test_UpdateUserPresenter:
+class TestUpdateUserPresenter:
 
     def test_update_user(self):
         event = {
@@ -52,7 +52,7 @@ class Test_UpdateUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "1",  "new_name": "João Soller"}',
+            "body": '{"user_id": "fdddafb9-687a-4982-a025-54fb12671932",  "new_name": "João Soller"}',
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -62,4 +62,4 @@ class Test_UpdateUserPresenter:
 
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['name'] == 'João Soller'
+        assert json.loads(response["body"])['user']['name'] == 'João Soller'

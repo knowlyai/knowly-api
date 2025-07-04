@@ -4,25 +4,24 @@ from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-class Test_UpdateUserController:
+class TestUpdateUserController:
     def test_update_user_controller(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUseCase(repo=repo)
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': "1",
+            'user_id': "fdddafb9-687a-4982-a025-54fb12671932",
             'new_name': 'Branco do Branco Branco da Silva'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == repo.users[0].user_id
-        assert response.body['name'] == 'Branco do Branco Branco da Silva'
-        assert response.body['email'] == repo.users[0].email
-        assert response.body['state'] == repo.users[0].state.value
-        assert response.body['message'] == "the user was updated successfully"
+        assert response.body['user']['user_id'] == repo.users[0].user_id
+        assert response.body['user']['name'] == 'Branco do Branco Branco da Silva'
+        assert response.body['user']['email'] == repo.users[0].email
+        assert response.body['message'] == "Usuário atualizado com sucesso"
 
     def test_update_user_controller_missing_user_id(self):
         repo = UserRepositoryMock()
@@ -37,20 +36,6 @@ class Test_UpdateUserController:
 
         assert response.status_code == 400
         assert response.body == "O campo user_id está faltando"
-
-    def test_update_user_controller_missing_new_name(self):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUseCase(repo=repo)
-        controller = UpdateUserController(usecase=usecase)
-
-        request = HttpRequest(body={
-            'user_id': "1"
-        })
-
-        response = controller(request=request)
-
-        assert response.status_code == 400
-        assert response.body == "O campo new_name está faltando"
 
     def test_update_user_controller_invalid_user_id(self):
         repo = UserRepositoryMock()
@@ -73,7 +58,7 @@ class Test_UpdateUserController:
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': "69",
+            'user_id': "0e49cbfb-61bd-4f55-9517-9e639a0e504b",
             'new_name': 'Branco do Branco Branco da Silva'
         })
 

@@ -109,7 +109,7 @@ class UserRepositoryMock(IUserRepository):
 
         raise NoItemsFound("user_id")
 
-    def update_user(self, user_id: str, new_name: Optional[str] = None, new_email: Optional[str] = None, new_cellphone: Optional[str] = None, new_address: Optional[str] = None, new_cep: Optional[str] = None ) -> User:
+    def update_user(self, user_id: str, update_date: int, new_name: Optional[str] = None, new_email: Optional[str] = None, new_cellphone: Optional[str] = None, new_address: Optional[str] = None, new_cep: Optional[str] = None ) -> User:
         for user in self.users:
             if user.user_id == user_id:
                 if new_name is not None:
@@ -122,6 +122,7 @@ class UserRepositoryMock(IUserRepository):
                     user.address = new_address
                 if new_cep is not None:
                     user.cep = new_cep
+                user.update_date = update_date
                 return user
 
         raise NoItemsFound("user_id")
