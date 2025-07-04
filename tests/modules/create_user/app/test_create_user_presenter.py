@@ -1,121 +1,301 @@
 import json
+import time
 
 from src.modules.create_user.app.create_user_presenter import lambda_handler
 
 
-class Test_CreateUserPresenter:
+class TestCreateUserPresenter:
 
-    def test_create_user(self):
+    def test_create_user_success(self):
+        """Teste de sucesso completo com todos os campos obrigatórios"""
         event = {
             "version": "2.0",
             "routeKey": "$default",
-            "rawPath": "/my/path",
-            "rawQueryString": "parameter1=value1&parameter1=value2&parameter2=value",
-            "cookies": [
-                "cookie1",
-                "cookie2"
-            ],
+            "rawPath": "/create-user",
+            "rawQueryString": "",
             "headers": {
-                "header1": "value1",
-                "header2": "value1,value2"
-            },
-            "queryStringParameters": {
-                "parameter1": "1"
+                "content-type": "application/json"
             },
             "requestContext": {
                 "accountId": "123456789012",
-                "apiId": "<urlid>",
-                "authentication": None,
-                "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
-                    }
-                },
-                "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
-                "domainPrefix": "<url-id>",
-                "external_interfaces": {
+                "apiId": "test-api",
+                "domainName": "test.lambda-url.us-west-2.on.aws",
+                "http": {
                     "method": "POST",
-                    "path": "/my/path",
+                    "path": "/create-user",
                     "protocol": "HTTP/1.1",
-                    "sourceIp": "123.123.123.123",
-                    "userAgent": "agent"
+                    "sourceIp": "127.0.0.1",
+                    "userAgent": "test-agent"
                 },
-                "requestId": "id",
+                "requestId": "test-request-id",
                 "routeKey": "$default",
                 "stage": "$default",
-                "time": "12/Mar/2020:19:03:58 +0000",
-                "timeEpoch": 1583348638390
+                "time": "01/Jan/2025:00:00:00 +0000",
+                "timeEpoch": int(time.time())
             },
-            "body": '{"name":"EhOLudjas",  "email":"eho@ludjas.com"}',
-            "pathParameters": None,
-            "isBase64Encoded": None,
-            "stageVariables": None
+            "body": json.dumps({
+                "user_id": "550e8400-e29b-41d4-a716-446655440000",
+                "name": "João Silva Santos",
+                "email": "joao.silva@teste.com",
+                "cellphone": "11987654321",
+                "p_type": "PF",
+                "cpf_cnpj": "71214584110",
+                "address": "Rua das Flores, 123",
+                "cep": "01234567",
+                "birthdate": int(time.time() - (25 * 365.25 * 24 * 60 * 60)),  # 25 anos
+                "plan": "Bronze"
+            }),
+            "isBase64Encoded": False
         }
-
-        # event = {'body': '{\r\n'
-        #                  '    "name": "Bruno Soller Da Silva",\r\n'
-        #                  '    "email": "sollinhp@soller.com"\r\n'
-        #                  '}',
-        #          'headers': {'Accept': '*/*',
-        #                      'Accept-Encoding': 'gzip, deflate, br',
-        #                      'Connection': 'keep-alive',
-        #                      'Content-Length': '78',
-        #                      'Content-Type': 'application/json',
-        #                      'Host': '127.0.0.1:3000',
-        #                      'Postman-Token': 'b7ecf13d-9745-4059-80c8-3f93cee693c0',
-        #                      'User-Agent': 'PostmanRuntime/7.29.2',
-        #                      'X-Forwarded-Port': '3000',
-        #                      'X-Forwarded-Proto': 'http'},
-        #          'httpMethod': 'POST',
-        #          'isBase64Encoded': False,
-        #          'multiValueHeaders': {'Accept': ['*/*'],
-        #                                'Accept-Encoding': ['gzip, deflate, br'],
-        #                                'Connection': ['keep-alive'],
-        #                                'Content-Length': ['78'],
-        #                                'Content-Type': ['application/json'],
-        #                                'Host': ['127.0.0.1:3000'],
-        #                                'Postman-Token': ['b7ecf13d-9745-4059-80c8-3f93cee693c0'],
-        #                                'User-Agent': ['PostmanRuntime/7.29.2'],
-        #                                'X-Forwarded-Port': ['3000'],
-        #                                'X-Forwarded-Proto': ['http']},
-        #          'multiValueQueryStringParameters': None,
-        #          'path': '/mss-template/create-user',
-        #          'pathParameters': None,
-        #          'queryStringParameters': None,
-        #          'requestContext': {'accountId': '123456789012',
-        #                             'apiId': '1234567890',
-        #                             'domainName': '127.0.0.1:3000',
-        #                             'extendedRequestId': None,
-        #                             'httpMethod': 'POST',
-        #                             'identity': {'accountId': None,
-        #                                          'apiKey': None,
-        #                                          'caller': None,
-        #                                          'cognitoAuthenticationProvider': None,
-        #                                          'cognitoAuthenticationType': None,
-        #                                          'cognitoIdentityPoolId': None,
-        #                                          'sourceIp': '127.0.0.1',
-        #                                          'user': None,
-        #                                          'userAgent': 'Custom User Agent String',
-        #                                          'userArn': None},
-        #                             'path': '/mss-template/create-user',
-        #                             'protocol': 'HTTP/1.1',
-        #                             'requestId': 'c75adc38-5577-4c83-871a-6001f2b06b43',
-        #                             'requestTime': '03/Feb/2023:02:30:59 +0000',
-        #                             'requestTimeEpoch': 1675391459,
-        #                             'resourceId': '123456',
-        #                             'resourcePath': '/mss-template/create-user',
-        #                             'stage': 'prod'},
-        #          'resource': '/mss-template/create-user',
-        #          'stageVariables': None,
-        #          'version': '1.0'}
 
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 201
-        assert json.loads(response["body"])["message"] == "the user was created successfully"
+        response_body = json.loads(response["body"])
+        assert response_body["message"] == "Usuário criado com sucesso"
+        assert response_body["user"]["user_id"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert response_body["user"]["name"] == "João Silva Santos"
+        assert response_body["user"]["email"] == "joao.silva@teste.com"
+
+    def test_create_user_success_without_birthdate(self):
+        """Teste de sucesso sem birthdate (campo opcional)"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": "650e8400-e29b-41d4-a716-446655440001",
+                "name": "Maria Oliveira",
+                "email": "maria@teste.com",
+                "cellphone": "11987654322",
+                "p_type": "PF",
+                "cpf_cnpj": "98765432100",
+                "address": "Av. Paulista, 1000",
+                "cep": "01310100",
+                "plan": "Silver"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 201
+        response_body = json.loads(response["body"])
+        assert response_body["message"] == "Usuário criado com sucesso"
+        assert response_body["user"]["user_id"] == "650e8400-e29b-41d4-a716-446655440001"
+
+    def test_create_user_person_juridica(self):
+        """Teste com pessoa jurídica"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": "750e8400-e29b-41d4-a716-446655440002",
+                "name": "TechCorp Soluções LTDA",
+                "email": "contato@techcorp.com",
+                "cellphone": "1133334444",
+                "p_type": "PJ",
+                "cpf_cnpj": "60.749.736/0001-99",
+                "address": "Rua dos Desenvolvedores, 500",
+                "cep": "04567890",
+                "plan": "Gold"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 201
+        response_body = json.loads(response["body"])
+        assert response_body["user"]["p_type"] == "PJ"
+        assert response_body["user"]["plan"] == "Gold"
+
+    def test_create_user_missing_required_field(self):
+        """Teste de erro: campo obrigatório ausente"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "name": "Teste Incompleto",
+                "email": "teste@incompleto.com",
+                "cellphone": "11999999999",
+                "p_type": "PF",
+                "cpf_cnpj": "12345678901",
+                "address": "Rua Teste, 123",
+                "cep": "01234567",
+                "plan": "Bronze"
+                # user_id ausente
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 400
+        assert "user_id" in response["body"]
+
+    def test_create_user_invalid_enum_p_type(self):
+        """Teste de erro: enum p_type inválido"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": "850e8400-e29b-41d4-a716-446655440003",
+                "name": "Teste Enum Inválido",
+                "email": "teste@enum.com",
+                "cellphone": "11999999999",
+                "p_type": "INVALID_TYPE",
+                "cpf_cnpj": "12345678901",
+                "address": "Rua Teste, 123",
+                "cep": "01234567",
+                "plan": "Bronze"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 400
+        assert "p_type" in response["body"]
+
+    def test_create_user_invalid_enum_plan(self):
+        """Teste de erro: enum plan inválido"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": "950e8400-e29b-41d4-a716-446655440004",
+                "name": "Teste Plan Inválido",
+                "email": "teste@plan.com",
+                "cellphone": "11999999999",
+                "p_type": "PF",
+                "cpf_cnpj": "12345678901",
+                "address": "Rua Teste, 123",
+                "cep": "01234567",
+                "plan": "INVALID_PLAN"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 400
+        assert "plan" in response["body"]
+
+    def test_create_user_wrong_type_parameter(self):
+        """Teste de erro: tipo de parâmetro incorreto"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": 123456,  # Deveria ser string
+                "name": "Teste Tipo Incorreto",
+                "email": "teste@tipo.com",
+                "cellphone": "11999999999",
+                "p_type": "PF",
+                "cpf_cnpj": "12345678901",
+                "address": "Rua Teste, 123",
+                "cep": "01234567",
+                "plan": "Bronze"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 400
+        assert "user_id" in response["body"]
+
+    def test_create_user_minor_age_error(self):
+        """Teste de erro: usuário menor de idade"""
+        event = {
+            "version": "2.0",
+            "routeKey": "$default",
+            "rawPath": "/create-user",
+            "headers": {
+                "content-type": "application/json"
+            },
+            "requestContext": {
+                "http": {
+                    "method": "POST",
+                    "path": "/create-user"
+                }
+            },
+            "body": json.dumps({
+                "user_id": "a50e8400-e29b-41d4-a716-446655440005",
+                "name": "Menor de Idade",
+                "email": "menor@teste.com",
+                "cellphone": "11999999999",
+                "p_type": "PF",
+                "cpf_cnpj": "12345678901",
+                "address": "Rua Teste, 123",
+                "cep": "01234567",
+                "birthdate": int(time.time() - (16 * 365.25 * 24 * 60 * 60)),  # 16 anos
+                "plan": "Bronze"
+            }),
+            "isBase64Encoded": False
+        }
+
+        response = lambda_handler(event, None)
+
+        assert response["statusCode"] == 400
+        assert "age" in response["body"] or "menor" in response["body"].lower()
