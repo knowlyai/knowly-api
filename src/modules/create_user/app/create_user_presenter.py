@@ -1,7 +1,7 @@
-from .create_user_controller import CreateUserController
-from .create_user_usecase import CreateUserUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
+from .create_user_controller import CreateUserController
+from .create_user_usecase import CreateUserUseCase
 
 repo = Environments.get_user_repo()()
 usecase = CreateUserUseCase(repo)
@@ -9,13 +9,9 @@ controller = CreateUserController(usecase)
 
 def lambda_handler(event, context):
 
-    from pprint import pprint
+    http_request = LambdaHttpRequest(data=event)
+    response = controller(http_request)
+    http_response = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
 
-    pprint(event)
-
-    httpRequest = LambdaHttpRequest(data=event)
-    response = controller(httpRequest)
-    httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
-
-    return httpResponse.toDict()
+    return http_response.toDict()
 
