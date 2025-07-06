@@ -1,3 +1,4 @@
+from typing import List
 from .get_transactions_by_user_usecase import GetTransactionsByUserUseCase
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
@@ -8,7 +9,7 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 class GetTransactionsByUserController:
 
     def __init__(self, usecase: GetTransactionsByUserUseCase):
-        self.usecase = usecase
+        self.get_transactions_by_user_usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -21,10 +22,10 @@ class GetTransactionsByUserController:
                     fieldTypeExpected="str",
                     fieldTypeReceived=type(user_id).__name__
                 )
-            if len(user_id.strip()) == 0:
+            if not user_id.strip():
                 raise EntityError("user_id")
 
-            transactions = self.usecase(user_id=user_id)
+            transactions = self.get_transactions_by_user_usecase(user_id=user_id)
             result = [
                 {
                     "id": t.id,
@@ -36,7 +37,12 @@ class GetTransactionsByUserController:
                 for t in transactions
             ]
 
-            return OK(result)
+            viewmodel = {
+                'transactions': result,
+                'message': 'Transações do usuário recuperadas com sucesso'
+            }
+
+            return OK(viewmodel)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)

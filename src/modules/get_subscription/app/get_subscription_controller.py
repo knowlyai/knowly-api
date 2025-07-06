@@ -9,7 +9,7 @@ from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadR
 class GetUserSubscriptionsController:
 
     def __init__(self, usecase: GetUserSubscriptionsUseCase):
-        self.get_subscription_usecase = usecase
+        self.get_user_subscriptions_usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -25,10 +25,15 @@ class GetUserSubscriptionsController:
             if not user_id.strip():
                 raise EntityError("user_id")
 
-            subscriptions = self.get_subscription_usecase(user_id=user_id)
-            result = [subscription.to_dict() for subscription in subscriptions]
+            subscriptions = self.get_user_subscriptions_usecase(user_id=user_id)
+            result = [sub.__to_dict__() for sub in subscriptions]
 
-            return OK(result)
+            viewmodel = {
+                'subscriptions': result,
+                'message': 'Assinaturas do usuário encontradas com sucesso'
+            }
+
+            return OK(viewmodel)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
