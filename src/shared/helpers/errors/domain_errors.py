@@ -22,3 +22,7 @@ class EntityParameterError(EntityError):
     @property
     def message(self):
         return self.__message
+
+class ForbiddenError(BaseError):
+    def __init__(self, field: str, message: str = None):
+        super().__init__(f'Field {field} forbidden: ' + (message or 'Operação não permitida'))
