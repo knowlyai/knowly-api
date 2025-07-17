@@ -1,5 +1,5 @@
-from src.shared.helpers.functions.generate_presigned_bucket_url import PresignedPostResponse, \
-    generate_presigned_bucket_url
+from src.modules.get_presigned_bucket_url.app.generate_presigned_bucket_url import generate_presigned_bucket_url
+from src.modules.get_presigned_bucket_url.app.types import PresignedPostResponse
 
 
 class GetPresignedBucketUrlUseCase:

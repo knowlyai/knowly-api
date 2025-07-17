@@ -6,7 +6,7 @@ use_case = GetPresignedBucketUrlUseCase()
 controller = GetPresignedBucketUrlController(use_case)
 
 
-def get_user_presenter(event):
+def get_presigned_bucket_url_presenter(event):
     http_request = LambdaHttpRequest(event)
     response = controller(http_request)
     http_response = LambdaHttpResponse(response)
@@ -14,5 +14,5 @@ def get_user_presenter(event):
 
 
 def lambda_handler(event, context):
-    response = get_user_presenter(event)
+    response = get_presigned_bucket_url_presenter(event)
     return response

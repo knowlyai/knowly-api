@@ -1,7 +1,7 @@
 from src.modules.get_presigned_bucket_url.app.get_presigned_bucket_url_usecase import GetPresignedBucketUrlUseCase
 from src.modules.get_presigned_bucket_url.app.types import GetPresignedBucketUrlRequest
 from src.shared.helpers.external_interfaces.external_interface import IRequest
-from src.shared.helpers.external_interfaces.http_codes import OK, InternalServerError
+from src.shared.helpers.external_interfaces.http_codes import OK, InternalServerError, BadRequest
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 
 
@@ -62,7 +62,14 @@ class GetPresignedBucketUrlController:
                 )
 
             presigned_url = self.get_presigned_bucket_url_use_case(bucket, user_id, kb_id, expires, max_size_mb)
-            response = OK(presigned_url)
-            return response
+
+            return OK(presigned_url)
+
+        except WrongTypeParameter as err:
+            return BadRequest(body=err.args[0])
+
+        except MissingParameters as err:
+            return BadRequest(body=err.args[0])
+
         except Exception as err:
             return InternalServerError(body=err.args[0])
