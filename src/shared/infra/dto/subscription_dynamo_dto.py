@@ -31,7 +31,7 @@ class SubscriptionDynamoDTO:
         Parse data from Subscription entity to SubscriptionDynamoDTO
         """
         return SubscriptionDynamoDTO(
-            id=subscription.id,
+            id=subscription.sub_id,
             user_id=subscription.user_id,
             previous_plan=subscription.previous_plan,
             new_plan=subscription.new_plan,

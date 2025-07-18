@@ -1,10 +1,7 @@
-import enum
-from enum import Enum
 import os
+from enum import Enum
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
-from src.shared.domain.repositories.transaction_repository_interface import ITransactionRepository
-from src.shared.domain.repositories.subscription_repository_interface import ISubscriptionRepository
 
 
 class STAGE(Enum):
@@ -72,28 +69,7 @@ class Environments:
             return UserRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
-        
-    @staticmethod
-    def get_transaction_repo() -> ITransactionRepository:
-        if Environments.get_envs().stage == STAGE.TEST:
-            from src.shared.infra.repositories.transaction_repository_mock import TransactionRepositoryMock
-            return TransactionRepositoryMock
-        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
-            from src.shared.infra.repositories.transaction_repository_dynamo import TransactionRepositoryDynamo
-            return TransactionRepositoryDynamo
-        else:
-            raise Exception("No repository found for this stage")
-        
-    @staticmethod
-    def get_subscription_repo() -> ISubscriptionRepository:
-        if Environments.get_envs().stage == STAGE.TEST:
-            from src.shared.infra.repositories.subscription_repository_mock import SubscriptionRepositoryMock
-            return SubscriptionRepositoryMock
-        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
-            from src.shared.infra.repositories.subscription_repository_dynamo import SubscriptionRepositoryDynamo
-            return SubscriptionRepositoryDynamo
-        else:
-            raise Exception("No repository found for subscription stage")
+
 
     @staticmethod
     def get_envs() -> "Environments":

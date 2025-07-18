@@ -1,10 +1,9 @@
 import json
-import pytest
 
-from src.modules.get_subscription.app.get_subscription_presenter import lambda_handler
+from src.modules.get_subscriptions_by_user.app.get_subscription_presenter import lambda_handler
 
 
-class Test_GetSubscriptionPresenter:
+class TestGetSubscriptionPresenter:
 
     def test_get_subscription(self):
         event = {
@@ -15,7 +14,7 @@ class Test_GetSubscriptionPresenter:
             "cookies": [],
             "headers": {},
             "queryStringParameters": {
-                "id": "sub-1"
+                "user_id": "fdddafb9-687a-4982-a025-54fb12671932"
             },
             "requestContext": {
                 "accountId": "123456789012",
@@ -45,11 +44,12 @@ class Test_GetSubscriptionPresenter:
 
         response = lambda_handler(event, None)
         assert response["statusCode"] == 200
+        print(response)
 
         body = json.loads(response["body"])
-        assert body["id"] == "sub-1"
-        assert body["user_id"] == "user-1"
-        assert body["previous_plan"] == "BRONZE"
-        assert body["new_plan"] == "SILVER"
-        assert body["update_date"] == 1700000000
+        assert body['subscriptions'][0]["sub_id"] == "fbf1af68-33c1-4f41-9290-5823158397a8"
+        assert body['subscriptions'][0]["user_id"] == "fdddafb9-687a-4982-a025-54fb12671932"
+        assert body['subscriptions'][0]["previous_plan"] == "Bronze"
+        assert body['subscriptions'][0]["new_plan"] == "Gold"
+        assert body['subscriptions'][0]["update_date"] == 1700000000
         assert "message" in body and isinstance(body["message"], str)

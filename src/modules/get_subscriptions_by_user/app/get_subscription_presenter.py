@@ -1,18 +1,20 @@
-from .get_transactions_by_user_controller import GetTransactionsByUserController
-from .get_transactions_by_user_usecase import GetTransactionsByUserUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
+from .get_subscription_controller import GetUserSubscriptionsController
+from .get_subscription_usecase import GetUserSubscriptionsUseCase
 
 repo = Environments.get_user_repo()()
-usecase = GetTransactionsByUserUseCase(repo=repo)
-controller = GetTransactionsByUserController(usecase=usecase)
+usecase = GetUserSubscriptionsUseCase(repo=repo)
+controller = GetUserSubscriptionsController(usecase=usecase)
 
 def lambda_handler(event, context):
     http_request = LambdaHttpRequest(data=event)
-    response = controller(request=http_request)
+
+    response = controller(http_request)
     http_response = LambdaHttpResponse(
         status_code=response.status_code,
         body=response.body,
         headers=response.headers
     )
+
     return http_response.toDict()

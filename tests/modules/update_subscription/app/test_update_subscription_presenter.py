@@ -3,7 +3,7 @@ import json
 from src.modules.update_subscription.app.update_subscription_presenter import lambda_handler
 
 
-class Test_UpdateSubscriptionPresenter:
+class TestUpdateSubscriptionPresenter:
 
     def test_update_subscription(self):
         event = {
@@ -35,8 +35,8 @@ class Test_UpdateSubscriptionPresenter:
                 "timeEpoch": 1717252800000
             },
             "body": json.dumps({
-                "id": "11111111-1111-1111-1111-111111111111",
-                "new_plan": "GOLD"
+                "user_id": "fdddafb9-687a-4982-a025-54fb12671932",
+                "new_plan": "SI"
             }),
             "pathParameters": None,
             "isBase64Encoded": False,
@@ -47,8 +47,8 @@ class Test_UpdateSubscriptionPresenter:
         assert response["statusCode"] == 200
 
         body = json.loads(response["body"])
-        assert body["id"] == "11111111-1111-1111-1111-111111111111"
-        assert body["previous_plan"] == "SILVER"
-        assert body["new_plan"] == "GOLD"
-        assert "update_date" in body  
+        assert body["subscription"]["user_id"] == "fdddafb9-687a-4982-a025-54fb12671932"
+        assert body["subscription"]["previous_plan"] == "Gold"
+        assert body["subscription"]["new_plan"] == "Silver"
+        assert "update_date" in body["subscription"]
         assert body["message"] == "subscription updated successfully"

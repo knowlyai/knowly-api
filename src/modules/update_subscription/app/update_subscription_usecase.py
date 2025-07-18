@@ -1,36 +1,27 @@
-import time
-from typing import List
 from src.shared.domain.entities.subscription import Subscription
-from src.shared.domain.enums.plan_enum import PLAN
-from src.shared.domain.repositories.subscription_repository_interface import ISubscriptionRepository
-from src.shared.helpers.errors.domain_errors import EntityError, ForbiddenError
+from src.shared.domain.entities.user import User
+from src.shared.domain.enums.plan_enum import PlanEnum
+from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction
+
 
 class UpdateSubscriptionUseCase:
-    def __init__(self, repo: ISubscriptionRepository):
+    def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, user_id: str, new_plan: PLAN) -> Subscription:
-        if not isinstance(user_id, str) or not user_id.strip():
+    def __call__(self, user_id: str, new_plan: PlanEnum) -> Subscription:
+        if not User.validate_user_id(user_id):
             raise EntityError("user_id")
 
-        if not isinstance(new_plan, PLAN):
+        if not isinstance(new_plan, PlanEnum):
             raise EntityError("new_plan")
 
-        current = self.repo.get_subscription(subscription_id=user_id)
-        if current is None:
-            raise EntityError("subscription", "Assinatura não encontrada")
+        user = self.repo.get_user(user_id)
 
-        if current.plan == new_plan:
-            raise ForbiddenError("new_plan", "O novo plano deve ser diferente do plano atual")
-        
-        
-        current.previous_plan = current.plan
-        current.new_plan = new_plan
-        current.update_date = int(time.time())
+        if user.plan == new_plan:
+            raise ForbiddenAction("novo plano")
 
-        updated_subscription = self.repo.update_subscription(
-            subscription_id=user_id,
-            new_plan=new_plan
-        )
+        updated_subscription = self.repo.update_subscription(user_id=user_id, new_plan=new_plan)
 
         return updated_subscription

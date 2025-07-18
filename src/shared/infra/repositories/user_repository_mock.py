@@ -1,5 +1,9 @@
+import time
+import uuid
 from typing import List, Optional
 
+from src.shared.domain.entities.subscription import Subscription
+from src.shared.domain.entities.transactions import Transaction
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
@@ -91,6 +95,54 @@ class UserRepositoryMock(IUserRepository):
                  update_date=1749083500),
         ]
 
+        self.transactions = [
+            Transaction(
+                tran_id="a33e9c1d-8bb1-4634-9610-e09810f6e0c7",
+                user_id="fdddafb9-687a-4982-a025-54fb12671932",
+                plan=PlanEnum.BR,
+                value=29.9,
+                create_date=1717000000
+            ),
+            Transaction(
+                tran_id="a33e9c1d-8bb1-4634-9610-e09810f6e0c8",
+                user_id="fdddafb9-687a-4982-a025-54fb12671932",
+                plan=PlanEnum.SI,
+                value=59.9,
+                create_date=1717100000
+            ),
+            Transaction(
+                tran_id="a33e9c1d-8bb1-4634-9610-e09810f6e0c9",
+                user_id="fdddafb9-687a-4982-a025-54fb12671932",
+                plan=PlanEnum.GO,
+                value=19.9,
+                create_date=1717200000
+            ),
+        ]
+
+        self.subscriptions: List[Subscription] = [
+            Subscription(
+                sub_id="fbf1af68-33c1-4f41-9290-5823158397a8",
+                user_id="fdddafb9-687a-4982-a025-54fb12671932",
+                previous_plan=PlanEnum.BR,
+                new_plan=PlanEnum.GO,
+                update_date=1700000000
+            ),
+            Subscription(
+                sub_id="9cf4fdd7-f0d4-43cf-9603-e50a3033a6c3",
+                user_id="5042b518-83ca-4cbf-84fc-c992da2506e5",
+                previous_plan=PlanEnum.SI,
+                new_plan=PlanEnum.BR,
+                update_date=1700003600
+            ),
+            Subscription(
+                sub_id="a1bb21da-b84b-4d0d-a32d-90c08a435729",
+                user_id="f7e6d5c4-b3a2-9180-7654-321098765432",
+                previous_plan=PlanEnum.BR,
+                new_plan=PlanEnum.GO,
+                update_date=1700007200
+            ),
+        ]
+
     def get_user(self, user_id: str) -> User:
         for user in self.users:
             if user.user_id == user_id:
@@ -129,3 +181,26 @@ class UserRepositoryMock(IUserRepository):
 
     def get_user_counter(self) -> int:
         return self.user_counter
+
+
+    def get_transactions_by_user(self, user_id: str) -> List[Transaction]:
+        return [tx for tx in self.transactions if tx.user_id == user_id]
+
+    def get_subscriptions_by_user(self, user_id: str) -> List[Subscription]:
+        return [sub for sub in self.subscriptions if sub.user_id == user_id]
+
+    def update_subscription(self, user_id: str, new_plan: PlanEnum) -> Subscription:
+        for user in self.users:
+            if user.user_id == user_id:
+                current_plan = user.plan
+                user.plan = new_plan
+                new_subscription = Subscription(
+                    sub_id=str(uuid.uuid4()),
+                    user_id=user_id,
+                    previous_plan=current_plan,
+                    new_plan=new_plan,
+                    update_date=int(time.time())
+                )
+                self.subscriptions.append(new_subscription)
+                return new_subscription
+        raise NoItemsFound("user_id")

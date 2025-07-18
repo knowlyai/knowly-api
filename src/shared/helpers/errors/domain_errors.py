@@ -23,6 +23,10 @@ class EntityParameterError(EntityError):
     def message(self):
         return self.__message
 
-class ForbiddenError(BaseError):
-    def __init__(self, field: str, message: str = None):
-        super().__init__(f'Field {field} forbidden: ' + (message or 'Operação não permitida'))
+class UpdateToSamePlanError(EntityError):
+    def __init__(self, message: str):
+        super().__init__(f"Não é possível atualizar para o mesmo plano: {message}")
+        self.__message = message
+    @property
+    def message(self):
+        return self.__message
