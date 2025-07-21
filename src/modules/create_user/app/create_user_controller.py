@@ -27,6 +27,7 @@ class CreateUserController:
 
             if request.data.get('email') is None:
                 raise MissingParameters('email')
+
             if type(request.data.get('email')) != str:
                 raise WrongTypeParameter('email', 'str', f"{type(request.data.get('email'))}")
 
@@ -73,6 +74,7 @@ class CreateUserController:
 
             user = self.CreateUserUseCase(
                 user_id=request.data.get('user_id'),
+
                 name=request.data.get('name'),
                 email=request.data.get('email'),
                 cellphone=request.data.get('cellphone'),

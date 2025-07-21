@@ -2,6 +2,7 @@ import time
 
 import pytest
 
+from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
@@ -85,10 +86,82 @@ class TestUserRepositoryMock:
     def test_update_user_not_found(self):
         repo = UserRepositoryMock()
         with pytest.raises(NoItemsFound):
-            repo.update_user("501bdc27-951e-40ff-8d11-863ab36eb16d", "Bruno Guirão")
+            repo.update_user("501bdc27-951e-40ff-8d11-863ab36eb16d", update_date=int(time.time()), new_name="Bruno Guirão")
 
     def test_get_users_counter(self):
         repo = UserRepositoryMock()
 
         assert repo.get_user_counter() == 6
 
+    def test_get_transactions_by_user(self):
+        repo = UserRepositoryMock()
+        transactions = repo.get_transactions_by_user(user_id="fdddafb9-687a-4982-a025-54fb12671932")
+
+        assert len(transactions) == 3
+
+    def test_get_transactions_by_user_empty(self):
+        repo = UserRepositoryMock()
+        transactions = repo.get_transactions_by_user(user_id="nonexistent-user-id")
+
+        assert len(transactions) == 0
+
+    def test_get_subscriptions_by_user(self):
+        repo = UserRepositoryMock()
+        subscriptions = repo.get_subscriptions_by_user(user_id="fdddafb9-687a-4982-a025-54fb12671932")
+
+        assert len(subscriptions) == 1
+        assert subscriptions[0].sub_id == "fbf1af68-33c1-4f41-9290-5823158397a8"
+        assert subscriptions[0].user_id == "fdddafb9-687a-4982-a025-54fb12671932"
+        assert subscriptions[0].previous_plan == PlanEnum.BR
+        assert subscriptions[0].new_plan == PlanEnum.GO
+
+    def test_get_subscriptions_by_user_multiple(self):
+        repo = UserRepositoryMock()
+        subscriptions = repo.get_subscriptions_by_user(user_id="5042b518-83ca-4cbf-84fc-c992da2506e5")
+
+        assert len(subscriptions) == 1
+        assert subscriptions[0].previous_plan == PlanEnum.SI
+        assert subscriptions[0].new_plan == PlanEnum.BR
+
+    def test_get_subscriptions_by_user_empty(self):
+        repo = UserRepositoryMock()
+        subscriptions = repo.get_subscriptions_by_user(user_id="nonexistent-user-id")
+
+        assert len(subscriptions) == 0
+
+    def test_update_subscription(self):
+        repo = UserRepositoryMock()
+
+        # Verificar plano atual do usuário
+        user_before = repo.get_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert user_before.plan == PlanEnum.GO
+
+        # Atualizar subscription
+        new_subscription = repo.update_subscription(
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            new_plan=PlanEnum.SI
+        )
+
+        # Verificar que o plano do usuário foi atualizado
+        user_after = repo.get_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert user_after.plan == PlanEnum.SI
+
+        # Verificar dados da nova subscription
+        assert new_subscription.user_id == "fdddafb9-687a-4982-a025-54fb12671932"
+        assert new_subscription.previous_plan == PlanEnum.GO
+        assert new_subscription.new_plan == PlanEnum.SI
+        assert isinstance(new_subscription.update_date, int)
+        assert new_subscription.update_date > 0
+
+        # Verificar que a subscription foi adicionada à lista
+        subscriptions = repo.get_subscriptions_by_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(subscriptions) == 2  # A original + a nova
+
+    def test_update_subscription_user_not_found(self):
+        repo = UserRepositoryMock()
+
+        with pytest.raises(NoItemsFound):
+            repo.update_subscription(
+                user_id="nonexistent-user-id",
+                new_plan=PlanEnum.SI
+            )

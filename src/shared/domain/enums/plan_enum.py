@@ -7,3 +7,4 @@ class PlanEnum(Enum):
     BR = "Bronze"
     SI = "Silver"
     GO = "Gold"
+

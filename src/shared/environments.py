@@ -1,6 +1,5 @@
-import enum
-from enum import Enum
 import os
+from enum import Enum
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 
@@ -70,6 +69,7 @@ class Environments:
             return UserRepositoryDynamo
         else:
             raise Exception("No repository found for this stage")
+
 
     @staticmethod
     def get_envs() -> "Environments":

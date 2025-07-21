@@ -22,3 +22,11 @@ class EntityParameterError(EntityError):
     @property
     def message(self):
         return self.__message
+
+class UpdateToSamePlanError(EntityError):
+    def __init__(self, message: str):
+        super().__init__(f"Não é possível atualizar para o mesmo plano: {message}")
+        self.__message = message
+    @property
+    def message(self):
+        return self.__message
