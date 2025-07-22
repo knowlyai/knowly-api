@@ -1,4 +1,5 @@
 from src.modules.chat.app.chat_usecase import ChatUseCase
+from src.shared.domain.enums.models_enum import Models
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK
@@ -24,7 +25,7 @@ class ChatController:
                 )
             if not model:
                 raise MissingParameters('model')
-            if type(model) != str:
+            if type(model) != Models:
                 raise WrongTypeParameter(
                     fieldName="model",
                     fieldTypeExpected="str",
@@ -45,7 +46,7 @@ class ChatController:
                     fieldTypeReceived=top_k.__class__.__name__
                 )
 
-            result = self.chat_usecase(kb_id=kb_id, model=model, prompt=prompt, top_k=top_k)
+            result = self.chat_usecase(kb_id=kb_id, model=model.value, prompt=prompt, top_k=top_k)
             return OK(body=result)
 
         except WrongTypeParameter as err:
