@@ -41,7 +41,6 @@ class ChatUseCase:
             return {
                 "answer": answer,
                 "citations": [x["generatedResponsePart"]["textResponsePart"]["text"] for x in citations]
-                # "citations": citations
             }
         except Exception as e:
             raise Exception(f"Erro ao enviar mensagem: {str(e)}")
