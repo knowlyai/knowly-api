@@ -2,6 +2,9 @@ from dotenv import load_dotenv
 import os
 import uuid
 import boto3
+from datetime import datetime
+
+from src.shared.domain.enums.status_enum import Status
 
 load_dotenv()
 
@@ -20,12 +23,20 @@ PK_FIELD = "id"
 
 bedrock = boto3.client(
     "bedrock-agent",
-    region_name=os.getenv('AWS_REGION_NAME')
+    region_name=os.getenv("AWS_REGION_NAME")
 )
 
 rds_data = boto3.client(
     "rds-data",
-    region_name=os.getenv('AWS_REGION_NAME')
+    region_name=os.getenv("AWS_REGION_NAME")
+)
+
+ddb = boto3.resource(
+    "dynamodb",
+    region_name=os.getenv("AWS_REGION_NAME")
+)
+table = ddb.Table(
+    os.getenv("DYNAMODB_TABLE_NAME")
 )
 
 
@@ -42,9 +53,9 @@ class CreateKbUseCase:
 
     @staticmethod
     def _create_kb(kb_name: str, kb_description: str) -> dict:
-        kb_id = uuid.uuid4().hex
-        table_name = f"kb.embedding_{kb_id}"
-        safe_suffix = table_name.split('.', 1)[1]
+        embedding_id = uuid.uuid4().hex
+        table_name = f"kb.embedding_{embedding_id}"
+        safe_suffix = table_name.split(".", 1)[1]
         gin_idx = f"{safe_suffix}_chunks_gin_idx"
         hnsw_idx = f"{safe_suffix}_embedding_hnsw_idx"
 
@@ -114,8 +125,22 @@ class CreateKbUseCase:
                 "user_id": "inserir aqui"
             }
         )
-        # Pegar o id da resp_kb e armazenar no Dynamo. Fazer a relação entre o id da KB e o id gerado
-        return resp_kb["knowledgeBase"]["knowledgeBaseId"]
+
+        kb_id = resp_kb["knowledgeBase"]["knowledgeBaseId"]
+        table.put_item(
+            Item={
+                "kb_id": kb_id,
+                "rds_table": f"embedding_{embedding_id}",
+                "user_id": "inserir aqui",
+                "name": kb_name,
+                "description": kb_description,
+                "status": Status.ACTIVE.value,
+                "created_at": int(datetime.now().timestamp()),
+                "updated_at": int(datetime.now().timestamp())
+            }
+        )
+
+        return kb_id
 
     def __call__(self, kb_name: str, kb_description: str):
         if self._kb_already_exists(kb_name):
