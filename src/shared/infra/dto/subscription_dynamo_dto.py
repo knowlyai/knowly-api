@@ -1,25 +1,25 @@
 from decimal import Decimal
 
 from src.shared.domain.entities.subscription import Subscription
-from src.shared.domain.enums.plan_enum import PLAN
+from src.shared.domain.enums.plan_enum import PlanEnum
 
 
 class SubscriptionDynamoDTO:
-    id: str
+    sub_id: str
     user_id: str
-    previous_plan: PLAN
-    new_plan: PLAN
+    previous_plan: PlanEnum
+    new_plan: PlanEnum
     update_date: int
 
     def __init__(
         self,
-        id: str,
+        sub_id: str,
         user_id: str,
-        previous_plan: PLAN,
-        new_plan: PLAN,
+        previous_plan: PlanEnum,
+        new_plan: PlanEnum,
         update_date: int
     ):
-        self.id = id
+        self.sub_id = sub_id
         self.user_id = user_id
         self.previous_plan = previous_plan
         self.new_plan = new_plan
@@ -31,7 +31,7 @@ class SubscriptionDynamoDTO:
         Parse data from Subscription entity to SubscriptionDynamoDTO
         """
         return SubscriptionDynamoDTO(
-            id=subscription.sub_id,
+            sub_id=subscription.sub_id,
             user_id=subscription.user_id,
             previous_plan=subscription.previous_plan,
             new_plan=subscription.new_plan,
@@ -44,7 +44,7 @@ class SubscriptionDynamoDTO:
         """
         return {
             "entity": "subscription",
-            "id": self.id,
+            "sub_id": self.sub_id,
             "user_id": self.user_id,
             "previous_plan": self.previous_plan.value,
             "new_plan": self.new_plan.value,
@@ -57,10 +57,10 @@ class SubscriptionDynamoDTO:
         Parse data from DynamoDB item to SubscriptionDynamoDTO
         """
         return SubscriptionDynamoDTO(
-            id=item["id"],
+            sub_id=item["sub_id"],
             user_id=item["user_id"],
-            previous_plan=PLAN(item["previous_plan"]),
-            new_plan=PLAN(item["new_plan"]),
+            previous_plan=PlanEnum(item["previous_plan"]),
+            new_plan=PlanEnum(item["new_plan"]),
             update_date=int(item["update_date"]),
         )
 
@@ -69,7 +69,7 @@ class SubscriptionDynamoDTO:
         Parse data from SubscriptionDynamoDTO to Subscription entity
         """
         return Subscription(
-            id=self.id,
+            sub_id=self.sub_id,
             user_id=self.user_id,
             previous_plan=self.previous_plan,
             new_plan=self.new_plan,
@@ -79,7 +79,7 @@ class SubscriptionDynamoDTO:
     def __repr__(self):
         return (
             f"SubscriptionDynamoDTO("
-            f"id={self.id!r}, "
+            f"sub_id={self.sub_id!r}, "
             f"user_id={self.user_id!r}, "
             f"previous_plan={self.previous_plan}, "
             f"new_plan={self.new_plan}, "
@@ -91,7 +91,7 @@ class SubscriptionDynamoDTO:
         if not isinstance(other, SubscriptionDynamoDTO):
             return False
         return (
-            self.id == other.id and
+            self.sub_id == other.sub_id and
             self.user_id == other.user_id and
             self.previous_plan == other.previous_plan and
             self.new_plan == other.new_plan and

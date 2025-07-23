@@ -2,17 +2,18 @@ from decimal import Decimal
 
 import boto3
 import dotenv
+
+from src.shared.environments import Environments
 from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-from src.shared.environments import Environments
 
 
 def setup_dynamo_table():
-    dynamo_table_name = "user_mss_template-table"
+    dynamo_table_name = "knowly-api-table"
     endpoint_url = "http://localhost:8000"
     print("Setting up DynamoDB table...")
 
-    dynamo_client = boto3.client('dynamodb', endpoint_url=endpoint_url)
+    dynamo_client = boto3.client('dynamodb', endpoint_url=endpoint_url, region_name='us-east-1')
     print("DynamoDB client created")
     tables = dynamo_client.list_tables()['TableNames']
 
@@ -48,7 +49,7 @@ def setup_dynamo_table():
 
         print('Loading table...')
 
-        dynamodb = boto3.resource('dynamodb', endpoint_url=endpoint_url)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=endpoint_url, region_name='us-east-1')
 
         table = dynamodb.Table(dynamo_table_name)
 
@@ -82,6 +83,22 @@ def load_mock_to_local_dynamo():
         count += 1
 
     print(f"{count} users loaded to dynamo!")
+
+    count = 0
+    for transaction in mock_repo.transactions:
+        print(f"Loading transaction {transaction.tran_id} for user {transaction.user_id}")
+        dynamo_repo.create_transaction(transaction)
+        count += 1
+
+    print(f"{count} transactions loaded to dynamo!")
+
+    count = 0
+    for subscription in mock_repo.subscriptions:
+        print(f"Loading subscription {subscription.sub_id} for user {subscription.user_id}")
+        dynamo_repo.create_subscription(subscription)
+        count += 1
+
+    print(f"{count} subscriptions loaded to dynamo!")
 
 def load_mock_to_real_dynamo():
     mock_repo = UserRepositoryMock()

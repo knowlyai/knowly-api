@@ -1,8 +1,10 @@
 import time
+import uuid
 
 import pytest
 
 from src.shared.domain.entities.subscription import Subscription
+from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
@@ -104,6 +106,129 @@ class TestUserRepositoryMock:
         transactions = repo.get_transactions_by_user(user_id="nonexistent-user-id")
 
         assert len(transactions) == 0
+
+    def test_create_transaction(self):
+        repo = UserRepositoryMock()
+
+        # Verifica quantidade inicial de transações
+        initial_count = len(repo.transactions)
+
+        # Cria nova transação com UUID válido
+        new_transaction = Transaction(
+            tran_id=str(uuid.uuid4()),
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            plan=PlanEnum.SI,
+            value=99.99,
+            create_date=1717300000
+        )
+
+        created_transaction = repo.create_transaction(new_transaction)
+
+        # Verifica se a transação foi criada corretamente
+        assert created_transaction == new_transaction
+        assert len(repo.transactions) == initial_count + 1
+
+        # Verifica se a transação foi adicionada à lista
+        assert repo.transactions[-1] == new_transaction
+
+        # Verifica se a transação aparece nas consultas por usuário
+        user_transactions = repo.get_transactions_by_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(user_transactions) == 4  # 3 existentes + 1 nova
+        assert new_transaction in user_transactions
+
+    def test_create_transaction_different_user(self):
+        repo = UserRepositoryMock()
+
+        # Cria transação para usuário diferente com UUID válido
+        new_transaction = Transaction(
+            tran_id=str(uuid.uuid4()),
+            user_id="5042b518-83ca-4cbf-84fc-c992da2506e5",
+            plan=PlanEnum.GO,
+            value=149.90,
+            create_date=1717400000
+        )
+
+        created_transaction = repo.create_transaction(new_transaction)
+
+        # Verifica se a transação foi criada
+        assert created_transaction == new_transaction
+
+        # Verifica se aparece apenas nas consultas do usuário correto
+        user_transactions = repo.get_transactions_by_user("5042b518-83ca-4cbf-84fc-c992da2506e5")
+        assert len(user_transactions) == 1
+        assert user_transactions[0] == new_transaction
+
+        # Verifica que não afeta as transações de outros usuários
+        other_user_transactions = repo.get_transactions_by_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(other_user_transactions) == 3  # Mantém as 3 originais
+
+    def test_create_subscription(self):
+        repo = UserRepositoryMock()
+
+        # Verifica quantidade inicial de subscriptions
+        initial_count = len(repo.subscriptions)
+
+        # Cria nova subscription com UUID válido
+        new_subscription = Subscription(
+            sub_id=str(uuid.uuid4()),
+            user_id="a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            previous_plan=PlanEnum.BR,
+            new_plan=PlanEnum.SI,
+            update_date=1700500000
+        )
+
+        created_subscription = repo.create_subscription(new_subscription)
+
+        # Verifica se a subscription foi criada corretamente
+        assert created_subscription == new_subscription
+        assert len(repo.subscriptions) == initial_count + 1
+
+        # Verifica se a subscription foi adicionada à lista
+        assert repo.subscriptions[-1] == new_subscription
+
+        # Verifica se a subscription aparece nas consultas por usuário
+        user_subscriptions = repo.get_subscriptions_by_user("a1b2c3d4-e5f6-7890-1234-567890abcdef")
+        assert len(user_subscriptions) == 1  # Usuário não tinha subscriptions antes
+        assert new_subscription in user_subscriptions
+
+    def test_create_subscription_different_user(self):
+        repo = UserRepositoryMock()
+
+        # Cria subscription para usuário que já tem uma subscription
+        new_subscription = Subscription(
+            sub_id=str(uuid.uuid4()),
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            previous_plan=PlanEnum.GO,
+            new_plan=PlanEnum.BR,
+            update_date=1700600000
+        )
+
+        created_subscription = repo.create_subscription(new_subscription)
+
+        # Verifica se a subscription foi criada
+        assert created_subscription == new_subscription
+
+        # Verifica se aparece nas consultas do usuário correto
+        user_subscriptions = repo.get_subscriptions_by_user("fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(user_subscriptions) == 2  # 1 existente + 1 nova
+        assert new_subscription in user_subscriptions
+
+        # Verifica que não afeta as subscriptions de outros usuários
+        other_user_subscriptions = repo.get_subscriptions_by_user("5042b518-83ca-4cbf-84fc-c992da2506e5")
+        assert len(other_user_subscriptions) == 1  # Mantém a original
+
+    def test_create_subscription_validates_same_plan(self):
+        repo = UserRepositoryMock()
+
+        # Tenta criar subscription com planos iguais (deve falhar)
+        with pytest.raises(Exception):  # A entidade Subscription lança ForbiddenAction
+            Subscription(
+                sub_id=str(uuid.uuid4()),
+                user_id="a1b2c3d4-e5f6-7890-1234-567890abcdef",
+                previous_plan=PlanEnum.BR,
+                new_plan=PlanEnum.BR,  # Mesmo plano
+                update_date=1700700000
+            )
 
     def test_get_subscriptions_by_user(self):
         repo = UserRepositoryMock()

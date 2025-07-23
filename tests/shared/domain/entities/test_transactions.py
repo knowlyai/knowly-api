@@ -1,4 +1,4 @@
-from src.shared.domain.entities.transactions import Transaction
+from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.helpers.errors.domain_errors import EntityError
 import pytest
