@@ -54,7 +54,7 @@ class LambdaStack(Construct):
         transactions_resource = api_gateway_resource.add_resource("transactions")
 
         self.get_transactions_by_user_function = self._add_method_to_resource(
-            module_name="get_transactions",
+            module_name="get_transactions_by_user",
             http_method="GET",
             target_resource=transactions_resource,
             environment_variables=environment_variables
@@ -64,7 +64,7 @@ class LambdaStack(Construct):
         subscriptions_resource = api_gateway_resource.add_resource("subscriptions")
 
         self.get_subscriptions_by_user_function = self._add_method_to_resource(
-            module_name="get_subscriptions",
+            module_name="get_subscriptions_by_user",
             http_method="GET",
             target_resource=subscriptions_resource,
             environment_variables=environment_variables
