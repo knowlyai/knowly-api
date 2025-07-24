@@ -3,7 +3,7 @@ import uuid
 from typing import List, Optional
 
 from src.shared.domain.entities.subscription import Subscription
-from src.shared.domain.entities.transactions import Transaction
+from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
@@ -182,18 +182,28 @@ class UserRepositoryMock(IUserRepository):
     def get_user_counter(self) -> int:
         return self.user_counter
 
-
     def get_transactions_by_user(self, user_id: str) -> List[Transaction]:
         return [tx for tx in self.transactions if tx.user_id == user_id]
 
+    def create_transaction(self, transaction: Transaction) -> Transaction:
+        self.transactions.append(transaction)
+        return transaction
+
     def get_subscriptions_by_user(self, user_id: str) -> List[Subscription]:
         return [sub for sub in self.subscriptions if sub.user_id == user_id]
+
+    def create_subscription(self, subscription: Subscription) -> Subscription:
+        self.subscriptions.append(subscription)
+        return subscription
 
     def update_subscription(self, user_id: str, new_plan: PlanEnum) -> Subscription:
         for user in self.users:
             if user.user_id == user_id:
                 current_plan = user.plan
+                # Atualiza o plano do usuário diretamente
                 user.plan = new_plan
+
+                # Cria nova subscription
                 new_subscription = Subscription(
                     sub_id=str(uuid.uuid4()),
                     user_id=user_id,

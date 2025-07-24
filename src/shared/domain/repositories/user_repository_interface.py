@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from src.shared.domain.entities.subscription import Subscription
-from src.shared.domain.entities.transactions import Transaction
+from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.plan_enum import PlanEnum
 
@@ -45,6 +45,13 @@ class IUserRepository(ABC):
         """
         pass
 
+    @abstractmethod
+    def create_transaction(self, transaction: Transaction) -> Transaction:
+        """
+        Creates a new transaction record for the user.
+        """
+        pass
+
     # Subscription methods
 
     @abstractmethod
@@ -58,5 +65,12 @@ class IUserRepository(ABC):
     def update_subscription(self, user_id: str, new_plan: PlanEnum) -> Subscription:
         """
         Creates a new record of subscription for the user with the new plan and updates the plan on the user entity.
+        """
+        pass
+
+    @abstractmethod
+    def create_subscription(self, subscription: Subscription) -> Subscription:
+        """
+        Creates a new subscription record for the user.
         """
         pass

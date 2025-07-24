@@ -1,6 +1,6 @@
 from typing import List
 
-from src.shared.domain.entities.transactions import Transaction
+from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.domain_errors import EntityError
 
