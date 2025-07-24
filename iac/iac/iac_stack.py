@@ -39,7 +39,7 @@ class IacStack(Stack):
         }
                                                                )
 
-        self.dynamo_table = DynamoStack(self, "KnowlyDynamoTable")
+        self.dynamo_table = DynamoStack(self)
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",

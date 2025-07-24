@@ -9,8 +9,8 @@ from constructs import Construct
 class DynamoStack(Construct):
     table: dynamodb.Table
 
-    def __init__(self, scope: Construct,  **kwargs) -> None:
-        super().__init__(scope, "KnowlyDynamo", **kwargs)
+    def __init__(self, scope: Construct) -> None:
+        super().__init__(scope, "KnowlyDynamo")
 
         self.github_ref_name = os.environ.get("GITHUB_REF_NAME")
 
