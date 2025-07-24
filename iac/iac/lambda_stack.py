@@ -1,70 +1,105 @@
-import os
 from aws_cdk import (
     aws_lambda as lambda_,
-    NestedStack, Duration
+    Duration
 )
-from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
+from constructs import Construct
 
 
 class LambdaStack(Construct):
     functions_that_need_dynamo_permissions = []
 
-    def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_student_api_resource: Resource,
-                                              environment_variables: dict = {"STAGE": "TEST"}):
-        function = lambda_.Function(
-            self, module_name.title(),
-            code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
-            handler=f"app.{module_name}_presenter.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            layers=[self.lambda_layer, self.lambda_power_tools],
-            environment=environment_variables,
-            timeout=Duration.seconds(15)
-        )
-
-        mss_student_api_resource.add_resource(module_name.replace("_", "-")).add_method(method,
-                                                                                        integration=LambdaIntegration(
-                                                                                            function))
-
-        return function
-
     def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict) -> None:
-        super().__init__(scope, "Template_Lambdas")
+        super().__init__(scope, "KnowlyApiLambdas")
 
-        self.lambda_layer = lambda_.LayerVersion(self, "Template_Layer",
+        self.lambda_layer = lambda_.LayerVersion(self, "Knowly_Layer",
                                                  code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
-                                                 compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
+                                                 compatible_runtimes=[lambda_.Runtime.PYTHON_3_13]
                                                  )
 
         self.lambda_power_tools = lambda_.LayerVersion.from_layer_version_arn(self, "Lambda_Power_Tools", layer_version_arn="arn:aws:lambda:us-east-2:017000801446:layer:AWSLambdaPowertoolsPythonV2:22")
 
-        self.get_user_function = self.create_lambda_api_gateway_integration(
+        # ---- User Resource ----
+        user_resource = api_gateway_resource.add_resource("user")
+
+        self.get_user_function = self._add_method_to_resource(
             module_name="get_user",
-            method="GET",
-            mss_student_api_resource=api_gateway_resource,
+            http_method="GET",
+            target_resource=user_resource,
             environment_variables=environment_variables
         )
 
-        self.create_user_function = self.create_lambda_api_gateway_integration(
+        self.create_user_function = self._add_method_to_resource(
             module_name="create_user",
-            method="POST",
-            mss_student_api_resource=api_gateway_resource,
+            http_method="POST",
+            target_resource=user_resource,
             environment_variables=environment_variables
         )
 
-        self.delete_user_function = self.create_lambda_api_gateway_integration(
+        self.delete_user_function = self._add_method_to_resource(
             module_name="delete_user",
-            method="POST",
-            mss_student_api_resource=api_gateway_resource,
+            http_method="DELETE",
+            target_resource=user_resource,
             environment_variables=environment_variables
         )
 
-        self.update_user_function = self.create_lambda_api_gateway_integration(
+        self.update_user_function = self._add_method_to_resource(
             module_name="update_user",
-            method="POST",
-            mss_student_api_resource=api_gateway_resource,
+            http_method="PATCH",
+            target_resource=user_resource,
+            environment_variables=environment_variables
+        )
+
+        # ---- Transactions Resource ----
+        transactions_resource = api_gateway_resource.add_resource("transactions")
+
+        self.get_transactions_by_user_function = self._add_method_to_resource(
+            module_name="get_transactions",
+            http_method="GET",
+            target_resource=transactions_resource,
+            environment_variables=environment_variables
+        )
+
+        # ---- Subscriptions Resource ----
+        subscriptions_resource = api_gateway_resource.add_resource("subscriptions")
+
+        self.get_subscriptions_by_user_function = self._add_method_to_resource(
+            module_name="get_subscriptions",
+            http_method="GET",
+            target_resource=subscriptions_resource,
+            environment_variables=environment_variables
+        )
+
+        self.update_subscription_function = self._add_method_to_resource(
+            module_name="update_subscription",
+            http_method="PUT",
+            target_resource=subscriptions_resource,
             environment_variables=environment_variables
         )
 
         self.functions_that_need_dynamo_permissions = [self.get_user_function, self.create_user_function,
-                                                  self.delete_user_function, self.update_user_function]
+                                                self.delete_user_function, self.update_user_function,
+                                                self.get_transactions_by_user_function, self.get_subscriptions_by_user_function,
+                                                self.update_subscription_function]
+
+    def _add_method_to_resource(
+            self,
+            *,
+            module_name: str,
+            http_method: str,
+            target_resource: Resource,
+            environment_variables: dict
+      ) -> lambda_.Function:
+        fn = lambda_.Function(
+            self,
+            module_name.title(),
+            code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
+            handler=f"app.{module_name}_presenter.lambda_handler",
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            layers=[self.lambda_layer, self.lambda_power_tools],
+            environment=environment_variables,
+            timeout=Duration.seconds(15),
+        )
+
+        target_resource.add_method(http_method, LambdaIntegration(fn))
+        return fn
