@@ -1,7 +1,7 @@
 import os
 
 from aws_cdk import (
-    # Duration,
+    Duration,
     Stack,
     # aws_sqs as sqs,
 )
@@ -10,6 +10,7 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 
 from .lambda_stack import LambdaStack
 from .dynamo_stack import DynamoStack
+from .cognito_stack import CognitoStack
 
 
 class IacStack(Stack):
@@ -57,4 +58,4 @@ class IacStack(Stack):
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
 
-        
+        self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
