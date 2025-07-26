@@ -1,0 +1,50 @@
+import os
+
+from aws_cdk import (
+    aws_cognito, RemovalPolicy
+)
+from constructs import Construct
+
+
+class CognitoStack(Construct):
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+
+        github_ref_name = os.environ.get("GITHUB_REF_NAME")
+
+        self.user_pool = aws_cognito.UserPool(self, f"knowly_user_pool_{github_ref_name}",
+                                                removal_policy=RemovalPolicy.DESTROY,
+                                                self_sign_up_enabled=True,
+                                                auto_verify=aws_cognito.AutoVerifiedAttrs(email=True),
+                                                email=aws_cognito.UserPoolEmail.with_cognito(),
+                                                user_verification=aws_cognito.UserVerificationConfig(
+                                                    email_subject="Bem vindo ao sistema de autenticação Knowly",
+                                                    email_body="Olá! \n\nObrigado por se registrar no Knowly. \n\n Seu código de verificação é {####}.",
+                                                    email_style=aws_cognito.VerificationEmailStyle.CODE),
+                                                standard_attributes=aws_cognito.StandardAttributes(
+                                                    email=aws_cognito.StandardAttribute(
+                                                        required=True,
+                                                        mutable=True
+                                                    ),
+                                                    phone_number=aws_cognito.StandardAttribute(
+                                                        required=False,
+                                                        mutable=True
+                                                    ),
+                                                    fullname=aws_cognito.StandardAttribute(
+                                                        required=True,
+                                                        mutable=True
+                                                    ),
+                                                ),
+                                              sign_in_aliases=aws_cognito.SignInAliases(
+                                                    email=True,
+                                              ),
+                                              )
+
+        self.client = self.user_pool.add_client(f"knowly_user_pool_client_{github_ref_name}",
+                                                auth_flows=aws_cognito.AuthFlow(
+                                                    admin_user_password=True,
+                                                    custom=True,
+                                                    user_password=True,
+                                                    user_srp=True
+                                                ),
+                                                generate_secret=False)
