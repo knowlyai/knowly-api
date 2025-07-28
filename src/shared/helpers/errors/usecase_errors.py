@@ -12,3 +12,6 @@ class ForbiddenAction(BaseError):
     def __init__(self, message: str):
         super().__init__(f'Essa ação é proibida para {message}')
 
+class MinorAgeError(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Usuário é menor de idade: {message}')
