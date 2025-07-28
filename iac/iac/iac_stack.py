@@ -23,7 +23,7 @@ class IacStack(Stack):
 
         self.rest_api = RestApi(self, "KnowlyRestApi",
                                     rest_api_name="KnowlyRestApi",
-                                    description="This is the Template RestApi",
+                                    description=f"This is the Knowly RestApi for {self.github_ref_name}",
                                     default_cors_preflight_options=
                                     {
                                         "allow_origins": Cors.ALL_ORIGINS,
