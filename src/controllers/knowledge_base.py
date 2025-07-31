@@ -9,19 +9,23 @@ from src.modules.sync_kb.app.sync_kb_usecase import SyncKbUseCase
 from src.modules.delete_kb_file.app.delete_kb_file_controller import DeleteKbFileController
 from src.modules.delete_kb_file.app.delete_kb_file_usecase import DeleteKbFileUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/kb", tags=["Knowledge Bases"])
 
+class CreateKbRequest(BaseModel):
+    kb_name: str
+    kb_description: str
 
 @router.post("", summary="Cria uma base de conhecimento na AWS")
-async def create_kb(kb_name: str, kb_description: str):
+async def create_kb(body: CreateKbRequest):
     use_case = CreateKbUseCase()
     controller = CreateKbController(use_case)
-    params = {
-        "kb_name": kb_name,
-        "kb_description": kb_description
+    body = {
+        "kb_name": body.kb_name,
+        "kb_description": body.kb_description
     }
-    request = HttpRequest(query_params=params)
+    request = HttpRequest(body=body)
     response = controller(request)
 
     if not response:
@@ -32,7 +36,7 @@ async def create_kb(kb_name: str, kb_description: str):
     return response.data
 
 
-@router.get("/url-presigned", summary="Gera URL Presigned para enviar arquivos para uma base de conhecimento")
+@router.get("/presigned-url", summary="Gera URL Presigned para enviar arquivos para uma base de conhecimento")
 async def get_url_presigned(bucket: str, user_id: str, kb_id: str, expires: int = 900, max_size_mb: int = 20):
     use_case = GetPresignedBucketUrlUseCase()
     controller = GetPresignedBucketUrlController(use_case)
@@ -55,7 +59,7 @@ async def get_url_presigned(bucket: str, user_id: str, kb_id: str, expires: int 
 
 
 @router.get("/sync", summary="Sincroniza uma base de conhecimento com os arquivos enviados para o S3")
-async def create_kb(bucket_name: str, user_id: str, kb_id: str):
+async def sync_kb(bucket_name: str, user_id: str, kb_id: str):
     use_case = SyncKbUseCase()
     controller = SyncKbController(use_case)
     params = {
