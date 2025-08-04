@@ -1,13 +1,38 @@
 from src.modules.create_kb.app.create_kb_usecase import CreateKbUseCase
 from src.modules.create_kb.app.types import CreateKbRequest
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
+from src.shared.helpers.errors.usecase_errors import (
+    DuplicatedItem,
+    ExternalServiceError,
+    InfrastructureError,
+    DatabaseError,
+    ConfigurationError
+)
 from src.shared.helpers.external_interfaces.external_interface import IRequest
-from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created
+from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created, Conflict
 
 
 class CreateKbController:
     def __init__(self, create_kb_usecase: CreateKbUseCase):
         self.create_kb_usecase = create_kb_usecase
+
+    @staticmethod
+    def _validate_parameters(self, kb_name: str, kb_description: str):
+        """Valida os parâmetros de entrada"""
+        if not kb_name or not kb_name.strip():
+            raise ValueError("Nome da base de conhecimento é obrigatório")
+
+        if not kb_description or not kb_description.strip():
+            raise ValueError("Descrição da base de conhecimento é obrigatória")
+
+        if len(kb_name.strip()) < 3:
+            raise ValueError("Nome da base de conhecimento deve ter pelo menos 3 caracteres")
+
+        if len(kb_name.strip()) > 100:
+            raise ValueError("Nome da base de conhecimento deve ter no máximo 100 caracteres")
+
+        if len(kb_description.strip()) > 500:
+            raise ValueError("Descrição da base de conhecimento deve ter no máximo 500 caracteres")
 
     def __call__(self, request: IRequest[CreateKbRequest]):
         try:
@@ -34,14 +59,29 @@ class CreateKbController:
                     fieldTypeReceived=kb_description.__class__.__name__
                 )
 
-            kb_id = self.create_kb_usecase(kb_name, kb_description)
-            return Created(body={"kb_id": kb_id})
+            # Validar parâmetros na controller
+            self._validate_parameters(kb_name, kb_description)
 
-        except WrongTypeParameter as err:
-            return BadRequest(body=err.args[0])
+            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip())
+            return Created(body={"kb_id": kb_id, "details": "Base de conhecimento criada com sucesso"})
 
-        except MissingParameters as err:
-            return BadRequest(body=err.args[0])
+        except (MissingParameters, WrongTypeParameter) as err:
+            return BadRequest(body={"error": "Parâmetros inválidos", "details": err.args[0]})
+
+        except ValueError as err:
+            return BadRequest(body={"error": "Dados inválidos", "details": str(err)})
+
+        except DuplicatedItem as err:
+            return Conflict(body={"error": "Recurso já existe", "details": err.message})
+
+        except ConfigurationError as err:
+            return InternalServerError(body={"error": "Erro de configuração", "details": err.message})
+
+        except (ExternalServiceError, DatabaseError) as err:
+            return InternalServerError(body={"error": "Erro de serviço", "details": err.message})
+
+        except InfrastructureError as err:
+            return InternalServerError(body={"error": "Erro de infraestrutura", "details": err.message})
 
         except Exception as err:
-            return InternalServerError(body=err.args[0])
+            return InternalServerError(body={"error": "Erro interno", "details": "Ocorreu um erro inesperado"})
