@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
 
 from src.modules.create_kb.app.create_kb_controller import CreateKbController
 from src.modules.get_presigned_bucket_url.app.get_presigned_bucket_url_controller import GetPresignedBucketUrlController
@@ -19,21 +20,31 @@ class CreateKbRequest(BaseModel):
 
 @router.post("", summary="Cria uma base de conhecimento na AWS")
 async def create_kb(body: CreateKbRequest):
-    use_case = CreateKbUseCase()
-    controller = CreateKbController(use_case)
-    body = {
-        "kb_name": body.kb_name,
-        "kb_description": body.kb_description
-    }
-    request = HttpRequest(body=body)
-    response = controller(request)
+    try:
+        use_case = CreateKbUseCase()
+        controller = CreateKbController(use_case)
+        body_dict = {
+            "kb_name": body.kb_name,
+            "kb_description": body.kb_description
+        }
+        request = HttpRequest(body=body_dict)
+        response = controller(request)
 
-    if not response:
-        raise HTTPException(
-            status_code=500, detail="Algo deu errado ao criar a base de conhecimento"
+        # Retornar resposta com o código HTTP correto
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.body
         )
 
-    return response.data
+    except Exception as e:
+        # Fallback para erros não tratados pela controller interna
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno",
+                "details": "Ocorreu um erro inesperado ao criar a base de conhecimento"
+            }
+        )
 
 
 @router.get("/presigned-url", summary="Gera URL Presigned para enviar arquivos para uma base de conhecimento")
