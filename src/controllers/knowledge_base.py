@@ -49,24 +49,34 @@ async def create_kb(body: CreateKbRequest):
 
 @router.get("/presigned-url", summary="Gera URL Presigned para enviar arquivos para uma base de conhecimento")
 async def get_url_presigned(bucket: str, user_id: str, kb_id: str, expires: int = 900, max_size_mb: int = 20):
-    use_case = GetPresignedBucketUrlUseCase()
-    controller = GetPresignedBucketUrlController(use_case)
-    params = {
-        "bucket": bucket,
-        "user_id": user_id,
-        "kb_id": kb_id,
-        "expires": expires,
-        "max_size_mb": max_size_mb
-    }
-    request = HttpRequest(query_params=params)
-    response = controller(request)
+    try:
+        use_case = GetPresignedBucketUrlUseCase()
+        controller = GetPresignedBucketUrlController(use_case)
+        params = {
+            "bucket": bucket,
+            "user_id": user_id,
+            "kb_id": kb_id,
+            "expires": expires,
+            "max_size_mb": max_size_mb
+        }
+        request = HttpRequest(query_params=params)
+        response = controller(request)
 
-    if not response:
-        raise HTTPException(
-            status_code=500, detail="Algo deu errado ao gerar URL pré-assinada"
+        # Retornar resposta com o código HTTP correto
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.body
         )
 
-    return response.data
+    except Exception as e:
+        # Fallback para erros não tratados pela controller interna
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno",
+                "details": "Ocorreu um erro inesperado ao gerar URL pré-assinada"
+            }
+        )
 
 
 @router.get("/sync", summary="Sincroniza uma base de conhecimento com os arquivos enviados para o S3")
