@@ -16,7 +16,6 @@ class CreateKbController:
     def __init__(self, create_kb_usecase: CreateKbUseCase):
         self.create_kb_usecase = create_kb_usecase
 
-    @staticmethod
     def _validate_parameters(self, kb_name: str, kb_description: str):
         """Valida os parâmetros de entrada"""
         if not kb_name or not kb_name.strip():
