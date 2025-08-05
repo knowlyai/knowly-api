@@ -81,40 +81,60 @@ async def get_url_presigned(bucket: str, user_id: str, kb_id: str, expires: int 
 
 @router.get("/sync", summary="Sincroniza uma base de conhecimento com os arquivos enviados para o S3")
 async def sync_kb(bucket_name: str, user_id: str, kb_id: str):
-    use_case = SyncKbUseCase()
-    controller = SyncKbController(use_case)
-    params = {
-        "bucket_name": bucket_name,
-        "user_id": user_id,
-        "kb_id": kb_id
-    }
-    request = HttpRequest(query_params=params)
-    response = controller(request)
+    try:
+        use_case = SyncKbUseCase()
+        controller = SyncKbController(use_case)
+        params = {
+            "bucket_name": bucket_name,
+            "user_id": user_id,
+            "kb_id": kb_id
+        }
+        request = HttpRequest(query_params=params)
+        response = controller(request)
 
-    if not response:
-        raise HTTPException(
-            status_code=500, detail="Algo deu errado ao sincronizar a base de conhecimento"
+        # Retornar resposta com o código HTTP correto
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.body
         )
 
-    return response.data
+    except Exception as e:
+        # Fallback para erros não tratados pela controller interna
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno",
+                "details": "Ocorreu um erro inesperado ao sincronizar a base de conhecimento"
+            }
+        )
 
 
 @router.delete("/file", summary="Deleta um arquivo de uma base de conhecimento no S3")
 async def delete_kb_file(bucket: str, user_id: str, kb_id: str, file_name: str):
-    use_case = DeleteKbFileUseCase()
-    controller = DeleteKbFileController(use_case)
-    params = {
-        "bucket": bucket,
-        "user_id": user_id,
-        "kb_id": kb_id,
-        "file_name": file_name
-    }
-    request = HttpRequest(query_params=params)
-    response = controller(request)
+    try:
+        use_case = DeleteKbFileUseCase()
+        controller = DeleteKbFileController(use_case)
+        params = {
+            "bucket": bucket,
+            "user_id": user_id,
+            "kb_id": kb_id,
+            "file_name": file_name
+        }
+        request = HttpRequest(query_params=params)
+        response = controller(request)
 
-    if not response:
-        raise HTTPException(
-            status_code=500, detail="Algo deu errado ao deletar o arquivo da base de conhecimento"
+        # Retornar resposta com o código HTTP correto
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.body
         )
 
-    return response.data
+    except Exception as e:
+        # Fallback para erros não tratados pela controller interna
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno",
+                "details": "Ocorreu um erro inesperado ao deletar arquivo da base de conhecimento"
+            }
+        )
