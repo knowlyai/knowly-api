@@ -93,7 +93,7 @@ class GetPresignedBucketUrlController:
                 bucket.strip(), user_id.strip(), kb_id.strip(), expires, max_size_mb
             )
 
-            return OK(body={"presigned_url": presigned_url, "message": "URL pré-assinada gerada com sucesso"})
+            return OK(body=presigned_url)
 
         except (MissingParameters, WrongTypeParameter) as err:
             return BadRequest(body={"error": "Parâmetros inválidos", "details": err.args[0]})
