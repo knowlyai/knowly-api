@@ -52,7 +52,6 @@ class CreateKbUseCase:
     def __init__(self):
         self._validate_configuration()
 
-    @staticmethod
     def _validate_configuration(self):
         """Valida se todas as configurações necessárias estão presentes"""
         required_env_vars = [
@@ -71,7 +70,6 @@ class CreateKbUseCase:
         if missing_vars:
             raise ConfigurationError(f"Variáveis de ambiente obrigatórias não encontradas: {', '.join(missing_vars)}")
 
-    @staticmethod
     def _kb_already_exists(self, name: str) -> bool:
         """Retorna True se a KB já existir"""
         try:
@@ -122,7 +120,6 @@ class CreateKbUseCase:
                 pass  # Ignore cleanup errors
             raise
 
-    @staticmethod
     def _create_rds_table(self, table_name: str, gin_idx: str, hnsw_idx: str):
         """Cria a tabela no RDS com tratamento de erros"""
         try:
@@ -177,7 +174,6 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com RDS: {str(e)}")
 
-    @staticmethod
     def _create_bedrock_kb(self, kb_name: str, kb_description: str, table_name: str) -> str:
         """Cria a knowledge base no Bedrock"""
         try:
@@ -229,7 +225,6 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com Bedrock: {str(e)}")
 
-    @staticmethod
     def _save_to_dynamodb(self, kb_id: str, embedding_id: str, kb_name: str, kb_description: str):
         """Salva os dados no DynamoDB"""
         try:
@@ -256,7 +251,6 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com DynamoDB: {str(e)}")
 
-    @staticmethod
     def _cleanup_failed_creation(self, table_name: str):
         """Limpa recursos criados em caso de falha"""
         try:
