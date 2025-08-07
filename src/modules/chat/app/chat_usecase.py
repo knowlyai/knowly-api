@@ -81,11 +81,9 @@ class ChatUseCase:
             )
 
             answer = response["output"]["text"]
-            citations = response["citations"]
 
             return {
-                "answer": answer,
-                "citations": [x["generatedResponsePart"]["textResponsePart"]["text"] for x in citations]
+                "answer": answer
             }
 
         except ValueError as e:
