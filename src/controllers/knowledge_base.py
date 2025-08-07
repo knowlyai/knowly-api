@@ -1,7 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import JSONResponse
+from typing import Optional
 
 from src.modules.create_kb.app.create_kb_controller import CreateKbController
+from src.modules.get_kb.app.get_kb_controller import GetKbController
+from src.modules.get_kb.app.get_kb_usecase import GetKbUseCase
 from src.modules.get_presigned_bucket_url.app.get_presigned_bucket_url_controller import GetPresignedBucketUrlController
 from src.modules.get_presigned_bucket_url.app.get_presigned_bucket_url_usecase import GetPresignedBucketUrlUseCase
 from src.modules.create_kb.app.create_kb_usecase import CreateKbUseCase
@@ -136,5 +139,34 @@ async def delete_kb_file(bucket: str, user_id: str, kb_id: str, file_name: str):
             detail={
                 "error": "Erro interno",
                 "details": "Ocorreu um erro inesperado ao deletar arquivo da base de conhecimento"
+            }
+        )
+
+
+@router.get("", summary="Lista as bases de conhecimento")
+async def list_kbs(user_id: str, kb_id: Optional[str] = Query(None, description="ID da base de conhecimento")):
+    try:
+        use_case = GetKbUseCase()
+        controller = GetKbController(use_case)
+        params = {
+            "user_id": user_id,
+            "kb_id": kb_id
+        }
+        request = HttpRequest(query_params=params)
+        response = controller(request)
+
+        # Retornar resposta com o código HTTP correto
+        return JSONResponse(
+            status_code=response.status_code,
+            content=response.body
+        )
+
+    except Exception as e:
+        # Fallback para erros não tratados pela controller interna
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Erro interno",
+                "details": "Ocorreu um erro inesperado ao listar as bases de conhecimento"
             }
         )
