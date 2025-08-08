@@ -1,6 +1,6 @@
 import pytest
 
-from src.modules.get_subscriptions_by_user.app.get_subscription_usecase import GetUserSubscriptionsUseCase
+from src.modules.get_subscriptions_by_user.app.get_subscriptions_by_user_usecase import GetUserSubscriptionsUseCase
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock

@@ -2,7 +2,7 @@ from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter, EnumError
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound, MinorAgeError
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, MinorAgeError, UserAlreadyExists
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from src.shared.helpers.external_interfaces.http_codes import NotFound, BadRequest, InternalServerError, Created
 from .create_user_usecase import CreateUserUseCase
@@ -30,6 +30,11 @@ class CreateUserController:
 
             if type(request.data.get('email')) != str:
                 raise WrongTypeParameter('email', 'str', f"{type(request.data.get('email'))}")
+
+            if request.data.get('password') is None:
+                raise MissingParameters('password')
+            if type(request.data.get('password')) != str:
+                raise WrongTypeParameter('password', 'str', f"{type(request.data.get('password'))}")
 
             if request.data.get('cellphone') is None:
                 raise MissingParameters('cellphone')
@@ -74,9 +79,9 @@ class CreateUserController:
 
             user = self.CreateUserUseCase(
                 user_id=request.data.get('user_id'),
-
                 name=request.data.get('name'),
                 email=request.data.get('email'),
+                password=request.data.get('password'),
                 cellphone=request.data.get('cellphone'),
                 p_type=p_type,
                 cpf_cnpj=request.data.get('cpf_cnpj'),
@@ -92,6 +97,9 @@ class CreateUserController:
             }
 
             return Created(viewmodel)
+
+        except UserAlreadyExists as err:
+            return BadRequest(body=err.message)
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
