@@ -20,7 +20,7 @@ class CreateUserUseCase:
         self.region = "us-east-1"
         self.cognito = boto3.client("cognito-idp", region_name=self.region)
 
-    def __call__(self, user_id: str, name: str, email: str, password: str, cellphone: str, p_type: PTypeEnum, cpf_cnpj: str, address: str, cep: str, birthdate: Optional[int], plan: PlanEnum) -> User:
+    def __call__(self, name: str, email: str, password: str, cellphone: str, p_type: PTypeEnum, cpf_cnpj: str, address: str, cep: str, birthdate: Optional[int], plan: PlanEnum) -> User:
 
         current_time = int(time.time())
 
@@ -34,7 +34,7 @@ class CreateUserUseCase:
         # 18 years = 568024668
 
         try:
-            self.cognito.sign_up(
+            response = self.cognito.sign_up(
                 ClientId=self.client_id,
                 Username=email,
                 Password=password,
@@ -43,6 +43,7 @@ class CreateUserUseCase:
                     {"Name": "email", "Value": email}
                 ]
                 )
+            user_id = response['UserSub']
         except self.cognito.exceptions.UsernameExistsException:
             raise UserAlreadyExists(email)
         except ClientError as e:

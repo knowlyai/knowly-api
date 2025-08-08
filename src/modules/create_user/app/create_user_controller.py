@@ -15,11 +15,6 @@ class CreateUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('user_id') is None:
-                raise MissingParameters('user_id')
-            if type(request.data.get('user_id')) != str:
-                raise WrongTypeParameter('user_id', 'str', f"{type(request.data.get('user_id'))}")
-
             if request.data.get('name') is None:
                 raise MissingParameters('name')
             if type(request.data.get('name')) != str:
@@ -78,7 +73,6 @@ class CreateUserController:
                 raise MissingParameters('plan')
 
             user = self.CreateUserUseCase(
-                user_id=request.data.get('user_id'),
                 name=request.data.get('name'),
                 email=request.data.get('email'),
                 password=request.data.get('password'),
