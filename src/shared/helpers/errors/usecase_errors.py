@@ -15,3 +15,7 @@ class ForbiddenAction(BaseError):
 class MinorAgeError(BaseError):
     def __init__(self, message: str):
         super().__init__(f'Usuário é menor de idade: {message}')
+
+class UserAlreadyExists(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Usuário já existe: {message}')

@@ -1,7 +1,7 @@
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
-from .get_subscription_controller import GetUserSubscriptionsController
-from .get_subscription_usecase import GetUserSubscriptionsUseCase
+from .get_subscriptions_by_user_controller import GetUserSubscriptionsController
+from .get_subscriptions_by_user_usecase import GetUserSubscriptionsUseCase
 
 repo = Environments.get_user_repo()()
 usecase = GetUserSubscriptionsUseCase(repo=repo)

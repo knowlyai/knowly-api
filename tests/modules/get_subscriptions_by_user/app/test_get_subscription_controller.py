@@ -1,5 +1,5 @@
-from src.modules.get_subscriptions_by_user.app.get_subscription_controller import GetUserSubscriptionsController
-from src.modules.get_subscriptions_by_user.app.get_subscription_usecase import GetUserSubscriptionsUseCase
+from src.modules.get_subscriptions_by_user.app.get_subscriptions_by_user_controller import GetUserSubscriptionsController
+from src.modules.get_subscriptions_by_user.app.get_subscriptions_by_user_usecase import GetUserSubscriptionsUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 

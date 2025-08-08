@@ -1,6 +1,6 @@
 import json
 
-from src.modules.get_subscriptions_by_user.app.get_subscription_presenter import lambda_handler
+from src.modules.get_subscriptions_by_user.app.get_subscriptions_by_user_presenter import lambda_handler
 
 
 class TestGetSubscriptionPresenter:
