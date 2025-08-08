@@ -76,7 +76,7 @@ class ChatController:
                 top_k=top_k
             )
             return OK(body={
-                result
+                'answer': result['answer']
             })
 
         except (MissingParameters, WrongTypeParameter) as err:
