@@ -22,14 +22,14 @@ class IacStack(Stack):
         self.aws_region = os.environ.get("AWS_REGION")
 
         self.rest_api = RestApi(self, "KnowlyRestApi",
-                                    rest_api_name="KnowlyRestApi",
-                                    description=f"This is the Knowly RestApi for {self.github_ref_name}",
-                                    default_cors_preflight_options=
-                                    {
-                                        "allow_origins": Cors.ALL_ORIGINS,
-                                        "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-                                        "allow_headers": ["*"]
-                                    },
+                                rest_api_name="KnowlyRestApi",
+                                description=f"This is the Knowly RestApi for {self.github_ref_name}",
+                                default_cors_preflight_options=
+                                {
+                                    "allow_origins": Cors.ALL_ORIGINS,
+                                    "allow_methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+                                    "allow_headers": ["*"]
+                                },
                                 )
 
         api_gateway_resource = self.rest_api.root.add_resource("knowly-api", default_cors_preflight_options=
@@ -42,12 +42,15 @@ class IacStack(Stack):
 
         self.dynamo_table = DynamoStack(self)
 
+        self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
+
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
+            "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
         }
 
 
@@ -58,4 +61,3 @@ class IacStack(Stack):
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
 
-        self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
