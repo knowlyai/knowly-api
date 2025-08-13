@@ -11,6 +11,9 @@ class CognitoStack(Construct):
         super().__init__(scope, construct_id, **kwargs)
 
         github_ref_name = os.environ.get("GITHUB_REF_NAME")
+        # Gera prefixo de domínio (precisa ser único na região). Substitui caracteres inválidos.
+        domain_prefix_base = f"knowly-{github_ref_name}" if github_ref_name else "knowly"
+        safe_domain_prefix = ''.join(c.lower() if c.isalnum() or c == '-' else '-' for c in domain_prefix_base)[:63]
 
         self.user_pool = aws_cognito.UserPool(self, f"knowly_user_pool_{github_ref_name}",
                                                 removal_policy=RemovalPolicy.DESTROY,
@@ -39,6 +42,10 @@ class CognitoStack(Construct):
                                                     email=True,
                                               ),
                                               )
+        # Adiciona domínio necessário para envio de email de verificação com LINK
+        self.user_pool.add_domain("UserPoolDomain", cognito_domain=aws_cognito.CognitoDomainOptions(
+            domain_prefix=safe_domain_prefix
+        ))
 
         self.client = self.user_pool.add_client(f"knowly_user_pool_client_{github_ref_name}",
                                                 auth_flows=aws_cognito.AuthFlow(
