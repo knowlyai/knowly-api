@@ -19,8 +19,8 @@ class CognitoStack(Construct):
                                                 email=aws_cognito.UserPoolEmail.with_cognito(),
                                                 user_verification=aws_cognito.UserVerificationConfig(
                                                     email_subject="Bem vindo ao sistema de autenticação Knowly",
-                                                    email_body="Olá! \n\nObrigado por se registrar no Knowly. \n\n Seu código de verificação é {####}.",
-                                                    email_style=aws_cognito.VerificationEmailStyle.CODE),
+                                                    email_body="Olá! \n\nObrigado por se registrar no Knowly. \n\n Clique no link abaixo para verificar seu e-mail e ativar sua conta: \n\n {##Verify Email##} \n\n Se você não se registrou no Knowly, por favor ignore este e-mail.",
+                                                    email_style=aws_cognito.VerificationEmailStyle.LINK),
                                                 standard_attributes=aws_cognito.StandardAttributes(
                                                     email=aws_cognito.StandardAttribute(
                                                         required=True,
