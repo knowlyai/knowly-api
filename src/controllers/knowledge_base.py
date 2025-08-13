@@ -20,6 +20,7 @@ router = APIRouter(prefix="/kb", tags=["Knowledge Bases"])
 class CreateKbRequest(BaseModel):
     kb_name: str
     kb_description: str
+    kb_display_name: str
 
 @router.post("", summary="Cria uma base de conhecimento na AWS")
 async def create_kb(body: CreateKbRequest):
@@ -28,7 +29,8 @@ async def create_kb(body: CreateKbRequest):
         controller = CreateKbController(use_case)
         body_dict = {
             "kb_name": body.kb_name,
-            "kb_description": body.kb_description
+            "kb_description": body.kb_description,
+            "kb_display_name": body.kb_display_name
         }
         request = HttpRequest(body=body_dict)
         response = controller(request)

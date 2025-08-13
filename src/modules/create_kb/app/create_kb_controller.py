@@ -16,7 +16,7 @@ class CreateKbController:
     def __init__(self, create_kb_usecase: CreateKbUseCase):
         self.create_kb_usecase = create_kb_usecase
 
-    def _validate_parameters(self, kb_name: str, kb_description: str):
+    def _validate_parameters(self, kb_name: str, kb_description: str, kb_display_name: str):
         """Valida os parâmetros de entrada"""
         if not kb_name or not kb_name.strip():
             raise ValueError("Nome da base de conhecimento é obrigatório")
@@ -24,11 +24,20 @@ class CreateKbController:
         if not kb_description or not kb_description.strip():
             raise ValueError("Descrição da base de conhecimento é obrigatória")
 
+        if not kb_display_name or not kb_display_name.strip():
+            raise ValueError("Nome de exibição da base de conhecimento é obrigatório")
+
         if len(kb_name.strip()) < 3:
             raise ValueError("Nome da base de conhecimento deve ter pelo menos 3 caracteres")
 
         if len(kb_name.strip()) > 100:
             raise ValueError("Nome da base de conhecimento deve ter no máximo 100 caracteres")
+
+        if len(kb_display_name.strip()) < 3:
+            raise ValueError("Nome de exibição deve ter pelo menos 3 caracteres")
+
+        if len(kb_display_name.strip()) > 100:
+            raise ValueError("Nome de exibição deve ter no máximo 100 caracteres")
 
         if len(kb_description.strip()) > 500:
             raise ValueError("Descrição da base de conhecimento deve ter no máximo 500 caracteres")
@@ -37,6 +46,7 @@ class CreateKbController:
         try:
             kb_name = request.data.get("kb_name")
             kb_description = request.data.get("kb_description")
+            kb_display_name = request.data.get("kb_display_name")
 
             if not kb_name:
                 raise MissingParameters('kb_name')
@@ -58,10 +68,20 @@ class CreateKbController:
                     fieldTypeReceived=kb_description.__class__.__name__
                 )
 
-            # Validar parâmetros na controller
-            self._validate_parameters(kb_name, kb_description)
+            if not kb_display_name:
+                raise MissingParameters('kb_display_name')
 
-            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip())
+            if type(kb_display_name) != str:
+                raise WrongTypeParameter(
+                    fieldName="kb_display_name",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=kb_display_name.__class__.__name__
+                )
+
+            # Validar parâmetros na controller
+            self._validate_parameters(kb_name, kb_description, kb_display_name)
+
+            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip(), kb_display_name.strip())
             return Created(body={"kb_id": kb_id, "details": "Base de conhecimento criada com sucesso"})
 
         except (MissingParameters, WrongTypeParameter) as err:

@@ -106,6 +106,7 @@ class GetKbUseCase:
         return {
             "kb_id": kb_id,
             "name": item.get('name', ''),
+            "display_name": item.get('display_name', ''),
             "description": item.get('description', ''),
             "created_at": int(item.get('created_at', 0)),
             "updated_at": int(item.get('updated_at', 0)),

@@ -92,7 +92,7 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com AWS: {str(e)}")
 
-    def _create_kb(self, kb_name: str, kb_description: str) -> str:
+    def _create_kb(self, kb_name: str, kb_description: str, kb_display_name: str) -> str:
         """Cria a base de conhecimento e retorna o ID"""
         embedding_id = uuid.uuid4().hex
         table_name = f"kb.embedding_{embedding_id}"
@@ -108,7 +108,7 @@ class CreateKbUseCase:
             kb_id = self._create_bedrock_kb(kb_name, kb_description, table_name)
 
             # Salvar no DynamoDB
-            self._save_to_dynamodb(kb_id, embedding_id, kb_name, kb_description)
+            self._save_to_dynamodb(kb_id, embedding_id, kb_name, kb_description, kb_display_name)
 
             return kb_id
 
@@ -225,7 +225,7 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com Bedrock: {str(e)}")
 
-    def _save_to_dynamodb(self, kb_id: str, embedding_id: str, kb_name: str, kb_description: str):
+    def _save_to_dynamodb(self, kb_id: str, embedding_id: str, kb_name: str, kb_description: str, kb_display_name: str):
         """Salva os dados no DynamoDB"""
         try:
             table.put_item(
@@ -234,6 +234,7 @@ class CreateKbUseCase:
                     "rds_table": f"embedding_{embedding_id}",
                     "user_id": "inserir aqui",
                     "name": kb_name,
+                    "display_name": kb_display_name,
                     "description": kb_description,
                     "status": Status.ACTIVE.value,
                     "created_at": int(datetime.now().timestamp()),
@@ -264,7 +265,7 @@ class CreateKbUseCase:
         except:
             pass  # Ignore cleanup errors
 
-    def __call__(self, kb_name: str, kb_description: str) -> str:
+    def __call__(self, kb_name: str, kb_description: str, kb_display_name: str) -> str:
         """Executa o caso de uso de criação de knowledge base"""
         try:
             # Verificar se já existe
@@ -272,7 +273,7 @@ class CreateKbUseCase:
                 raise DuplicatedItem(f"base de conhecimento com nome '{kb_name}'")
 
             # Criar a knowledge base
-            kb_id = self._create_kb(kb_name, kb_description)
+            kb_id = self._create_kb(kb_name, kb_description, kb_display_name)
             return kb_id
 
         except (DuplicatedItem, ExternalServiceError, InfrastructureError,
