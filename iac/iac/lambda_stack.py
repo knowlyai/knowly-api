@@ -48,6 +48,16 @@ class LambdaStack(Construct):
             environment_variables=environment_variables
         )
 
+        # ---- Auth Resource ----
+        auth_resource = api_gateway_resource.add_resource("auth")
+
+        self.get_token_function = self._add_method_to_resource(
+            module_name="get_token",
+            http_method="POST",
+            target_resource=auth_resource,
+            environment_variables=environment_variables
+        )
+
         # ---- Transactions Resource ----
         transactions_resource = api_gateway_resource.add_resource("transactions")
 
