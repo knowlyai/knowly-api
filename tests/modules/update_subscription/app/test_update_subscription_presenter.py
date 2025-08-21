@@ -18,7 +18,13 @@ class TestUpdateSubscriptionPresenter:
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
-                "authorizer": {},
+                "authorizer": {
+                    "claims": {
+                        "sub": "fdddafb9-687a-4982-a025-54fb12671932",
+                        "name": "Enzo Sakamoto",
+                        "email": "saka@moto.com"
+                    }
+                },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
                 "domainPrefix": "<url-id>",
                 "external_interfaces": {
@@ -35,7 +41,6 @@ class TestUpdateSubscriptionPresenter:
                 "timeEpoch": 1717252800000
             },
             "body": json.dumps({
-                "user_id": "fdddafb9-687a-4982-a025-54fb12671932",
                 "new_plan": "SI"
             }),
             "pathParameters": None,

@@ -11,7 +11,11 @@ class TestDeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': 'fdddafb9-687a-4982-a025-54fb12671932'
+                "requester_user": {
+                    "sub": repo.users[0].user_id,
+                    "name": repo.users[0].name,
+                    "email": repo.users[0].email
+                }
             })
 
             response = controller(request=request)
@@ -26,27 +30,29 @@ class TestDeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': 1
+                "requester_user": {
+                    "sub": 1,
+                    "name": repo.users[0].name,
+                    "email": repo.users[0].email
+                }
             })
 
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == 'O campo user_id não está no tipo correto.\nRecebido: int.\nEsperado: str'
+            assert response.body == "O campo user_id não está no tipo correto.\nRecebido: <class 'int'>.\nEsperado: str"
 
     def test_delete_user_controller_missing_parameter(self):
             repo = UserRepositoryMock()
             usecase = DeleteUserUseCase(repo=repo)
             controller = DeleteUserController(usecase=usecase)
 
-            request = HttpRequest(body={
-                'id': '1'
-            })
+            request = HttpRequest(body={})
 
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == 'O campo user_id está faltando'
+            assert response.body == 'O campo requester_user está faltando'
 
     def test_delete_user_controller_invalid_user_id(self):
             repo = UserRepositoryMock()
@@ -54,13 +60,17 @@ class TestDeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': 2
+                "requester_user": {
+                    "sub": 'abc',
+                    "name": repo.users[0].name,
+                    "email": repo.users[0].email
+                }
             })
 
             response = controller(request=request)
 
             assert response.status_code == 400
-            assert response.body == "O campo user_id não está no tipo correto.\nRecebido: int.\nEsperado: str"
+            assert response.body == 'O campo user_id não é válido'
 
     def test_delete_user_controller_no_items_found(self):
             repo = UserRepositoryMock()
@@ -68,12 +78,14 @@ class TestDeleteUserController:
             controller = DeleteUserController(usecase=usecase)
 
             request = HttpRequest(body={
-                'user_id': 'ed0fc321-98eb-4ef9-b32b-7fd0bb081680'
+                "requester_user": {
+                    "sub": 'ed0fc321-98eb-4ef9-b32b-7fd0bb081680',
+                    "name": repo.users[0].name,
+                    "email": repo.users[0].email
+                }
             })
 
             response = controller(request=request)
 
             assert response.status_code == 404
             assert response.body == 'Nenhum item encontrado para user_id'
-
-

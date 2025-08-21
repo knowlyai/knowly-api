@@ -4,6 +4,7 @@ from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, Forbidden, InternalServerError
+from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
 from .update_subscription_usecase import UpdateSubscriptionUseCase
 
 
@@ -14,15 +15,20 @@ class UpdateSubscriptionController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            user_id_raw = request.data.get('user_id')
-            if user_id_raw is None:
-                raise MissingParameters('user_id')
+            # Authorizer obrigatório
+            if request.data.get('requester_user') is None:
+                raise MissingParameters('requester_user')
+
+            requester_user = UserApiGatewayDTO.from_api_gateway(request.data.get('requester_user'))
+            user_id_raw = requester_user.user_id
             if not isinstance(user_id_raw, str):
                 raise WrongTypeParameter(
                     field_name='user_id',
                     field_type_expected='str',
                     field_type_received=type(user_id_raw).__name__
                 )
+            if user_id_raw.strip() == "":
+                raise EntityError('user_id')
 
             new_plan_raw = request.data.get('new_plan')
             if new_plan_raw is None:
