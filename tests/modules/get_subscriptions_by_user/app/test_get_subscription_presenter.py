@@ -13,14 +13,18 @@ class TestGetSubscriptionPresenter:
             "rawQueryString": "id=sub-1",
             "cookies": [],
             "headers": {},
-            "queryStringParameters": {
-                "user_id": "fdddafb9-687a-4982-a025-54fb12671932"
-            },
+            "queryStringParameters": {},
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
-                "authorizer": {},
+                "authorizer": {
+                    "claims": {
+                        "sub": "fdddafb9-687a-4982-a025-54fb12671932",
+                        "name": "Enzo Sakamoto",
+                        "email": "saka@moto.com"
+                    }
+                },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
                 "domainPrefix": "<url-id>",
                 "external_interfaces": {
@@ -44,7 +48,6 @@ class TestGetSubscriptionPresenter:
 
         response = lambda_handler(event, None)
         assert response["statusCode"] == 200
-        print(response)
 
         body = json.loads(response["body"])
         assert body['subscriptions'][0]["sub_id"] == "fbf1af68-33c1-4f41-9290-5823158397a8"

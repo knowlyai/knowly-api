@@ -22,21 +22,18 @@ class TestGetUserPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "user_id": "fdddafb9-687a-4982-a025-54fb12671932"
+                "parameter1": ["value1", "value2"],
+                "parameter2": "value"
             },
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
+                    "claims": {
+                        "sub": "fdddafb9-687a-4982-a025-54fb12671932",
+                        "name": "Enzo Sakamoto",
+                        "email": "a@a"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",

@@ -13,52 +13,61 @@ class TestUpdateSubscriptionController:
 
         existing_user = repo.users[0]
         original_plan = existing_user.plan.value
-        new_plan_str = "SI" if existing_user.plan.value != "Silver" else "GO"
+        new_plan_str = "SI" if existing_user.plan.name != "SI" else "GO"
 
         request = HttpRequest(body={
-            "user_id": existing_user.user_id,
-            "new_plan": new_plan_str
+            'requester_user': {
+                'sub': existing_user.user_id,
+                'name': existing_user.name,
+                'email': existing_user.email
+            },
+            'new_plan': new_plan_str
         })
 
         response = controller(request=request)
 
         assert response.status_code == 200
         body = response.body
-        assert body["subscription"]["user_id"] == existing_user.user_id
-        assert body["subscription"]["previous_plan"] == original_plan
+        assert body['subscription']['user_id'] == existing_user.user_id
+        assert body['subscription']['previous_plan'] == original_plan
         expected_new_plan = PlanEnum[new_plan_str].value
-        assert body["subscription"]["new_plan"] == expected_new_plan
-        assert "sub_id" in body["subscription"]
-        assert "update_date" in body["subscription"]
-        assert body["message"] == "subscription updated successfully"
+        assert body['subscription']['new_plan'] == expected_new_plan
+        assert 'sub_id' in body['subscription']
+        assert 'update_date' in body['subscription']
+        assert body['message'] == 'subscription updated successfully'
 
-    def test_update_subscription_controller_missing_user_id(self):
+    def test_update_subscription_controller_missing_requester_user(self):
         repo = UserRepositoryMock()
         usecase = UpdateSubscriptionUseCase(repo=repo)
         controller = UpdateSubscriptionController(usecase=usecase)
 
         request = HttpRequest(body={
-            "new_plan": "GO"
+            'new_plan': 'GO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "O campo user_id está faltando"
+        assert response.body == 'O campo requester_user está faltando'
 
     def test_update_subscription_controller_missing_new_plan(self):
         repo = UserRepositoryMock()
         usecase = UpdateSubscriptionUseCase(repo=repo)
         controller = UpdateSubscriptionController(usecase=usecase)
 
+        existing_user = repo.users[0]
         request = HttpRequest(body={
-            "user_id": "fdddafb9-687a-4982-a025-54fb12671932"
+            'requester_user': {
+                'sub': existing_user.user_id,
+                'name': existing_user.name,
+                'email': existing_user.email
+            }
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "O campo new_plan está faltando"
+        assert response.body == 'O campo new_plan está faltando'
 
     def test_update_subscription_controller_invalid_user_id_type(self):
         repo = UserRepositoryMock()
@@ -66,17 +75,21 @@ class TestUpdateSubscriptionController:
         controller = UpdateSubscriptionController(usecase=usecase)
 
         request = HttpRequest(body={
-            "user_id": 123,
-            "new_plan": "GO"
+            'requester_user': {
+                'sub': 123,
+                'name': repo.users[0].name,
+                'email': repo.users[0].email
+            },
+            'new_plan': 'GO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
         expected = (
-            "O campo user_id não está no tipo correto.\n"
-            "Recebido: int.\n"
-            "Esperado: str"
+            'O campo user_id não está no tipo correto.\n'
+            'Recebido: int.\n'
+            'Esperado: str'
         )
         assert response.body == expected
 
@@ -85,18 +98,23 @@ class TestUpdateSubscriptionController:
         usecase = UpdateSubscriptionUseCase(repo=repo)
         controller = UpdateSubscriptionController(usecase=usecase)
 
+        existing_user = repo.users[0]
         request = HttpRequest(body={
-            "user_id": "fdddafb9-687a-4982-a025-54fb12671932",
-            "new_plan": 10
+            'requester_user': {
+                'sub': existing_user.user_id,
+                'name': existing_user.name,
+                'email': existing_user.email
+            },
+            'new_plan': 10
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
         expected = (
-            "O campo new_plan não está no tipo correto.\n"
-            "Recebido: int.\n"
-            "Esperado: str"
+            'O campo new_plan não está no tipo correto.\n'
+            'Recebido: int.\n'
+            'Esperado: str'
         )
         assert response.body == expected
 
@@ -105,15 +123,20 @@ class TestUpdateSubscriptionController:
         usecase = UpdateSubscriptionUseCase(repo=repo)
         controller = UpdateSubscriptionController(usecase=usecase)
 
+        existing_user = repo.users[0]
         request = HttpRequest(body={
-            "user_id": "fdddafb9-687a-4982-a025-54fb12671932",
-            "new_plan": "INVALID_PLAN"
+            'requester_user': {
+                'sub': existing_user.user_id,
+                'name': existing_user.name,
+                'email': existing_user.email
+            },
+            'new_plan': 'INVALID_PLAN'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "O campo new_plan não é válido"
+        assert response.body == 'O campo new_plan não é válido'
 
     def test_update_subscription_controller_user_not_found(self):
         repo = UserRepositoryMock()
@@ -121,14 +144,18 @@ class TestUpdateSubscriptionController:
         controller = UpdateSubscriptionController(usecase=usecase)
 
         request = HttpRequest(body={
-            "user_id": "12345678-1234-1234-1234-123456789abc",
-            "new_plan": "GO"
+            'requester_user': {
+                'sub': '12345678-1234-1234-1234-123456789abc',
+                'name': 'X',
+                'email': 'x@example.com'
+            },
+            'new_plan': 'GO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 404
-        assert response.body == "Nenhum item encontrado para user_id"
+        assert response.body == 'Nenhum item encontrado para user_id'
 
     def test_update_subscription_controller_same_plan_forbidden(self):
         repo = UserRepositoryMock()
@@ -136,17 +163,21 @@ class TestUpdateSubscriptionController:
         controller = UpdateSubscriptionController(usecase=usecase)
 
         existing_user = repo.users[0]
-        current_plan_str = existing_user.plan.name  # Usa o nome do enum (GO, SI, BR)
+        current_plan_str = existing_user.plan.name
 
         request = HttpRequest(body={
-            "user_id": existing_user.user_id,
-            "new_plan": current_plan_str
+            'requester_user': {
+                'sub': existing_user.user_id,
+                'name': existing_user.name,
+                'email': existing_user.email
+            },
+            'new_plan': current_plan_str
         })
 
         response = controller(request=request)
 
         assert response.status_code == 403
-        assert response.body == "Essa ação é proibida para novo plano"
+        assert response.body == 'Essa ação é proibida para novo plano'
 
     def test_update_subscription_controller_invalid_user_id_format(self):
         repo = UserRepositoryMock()
@@ -154,11 +185,15 @@ class TestUpdateSubscriptionController:
         controller = UpdateSubscriptionController(usecase=usecase)
 
         request = HttpRequest(body={
-            "user_id": "",
-            "new_plan": "GO"
+            'requester_user': {
+                'sub': '',
+                'name': 'X',
+                'email': 'x@example.com'
+            },
+            'new_plan': 'GO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "O campo user_id não é válido"
+        assert response.body == 'O campo user_id não é válido'
