@@ -3,7 +3,7 @@ import json
 from src.modules.delete_user.app.delete_user_presenter import lambda_handler
 
 
-class Test_DeleteUserPresenter:
+class TestDeleteUserPresenter:
 
     def test_delete_user(self):
         event = {
@@ -27,14 +27,10 @@ class Test_DeleteUserPresenter:
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
+                    "claims": {
+                        "sub": "fdddafb9-687a-4982-a025-54fb12671932",
+                        "name": "Enzo Sakamoto",
+                        "email": "saka@moto.com"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -52,7 +48,7 @@ class Test_DeleteUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "1"}',
+            "body": None,
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -60,11 +56,21 @@ class Test_DeleteUserPresenter:
 
         response = lambda_handler(event, None)
 
-        expected = {'user_id': 1,
-                     'name': 'Bruno Soller',
-                     'email': 'soller@soller.com',
-                     'state': 'APPROVED',
-                     'message': 'the user was deleted successfully'}
+        expected = {'user': {
+            'user_id': 'fdddafb9-687a-4982-a025-54fb12671932',
+            'name': 'Enzo Sakamoto',
+            'email': 'saka@moto.com',
+            'cellphone': '11 95320-2088',
+            'p_type': 'PF',
+            'cpf_cnpj': '37973280871',
+            'address': 'Rua das Flores, 123',
+            'cep': '04111111',
+            'plan': 'Gold',
+            'creation_date': 1749079322,
+            'update_date': 1749079323,
+            'birthdate': 1022368922
+        },
+            'message': 'O usuário foi excluído com sucesso'}
 
         assert json.loads(response["body"]) == expected
         assert response["statusCode"] == 200
