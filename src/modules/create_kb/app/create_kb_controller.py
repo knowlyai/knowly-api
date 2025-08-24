@@ -10,6 +10,7 @@ from src.shared.helpers.errors.usecase_errors import (
 )
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created, Conflict
+from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
 
 
 class CreateKbController:
@@ -44,6 +45,19 @@ class CreateKbController:
 
     def __call__(self, request: IRequest[CreateKbRequest]):
         try:
+            # Authorizer obrigatório
+            if request.data.get('requester_user') is None:
+                raise MissingParameters('requester_user')
+
+            requester_user = UserApiGatewayDTO.from_api_gateway(request.data.get('requester_user'))
+
+            if type(requester_user.user_id) != str:
+                raise WrongTypeParameter(
+                    field_name='user_id',
+                    field_type_expected='str',
+                    field_type_received=type(requester_user.user_id)
+                )
+
             kb_name = request.data.get("kb_name")
             kb_description = request.data.get("kb_description")
             kb_display_name = request.data.get("kb_display_name")
@@ -81,7 +95,7 @@ class CreateKbController:
             # Validar parâmetros na controller
             self._validate_parameters(kb_name, kb_description, kb_display_name)
 
-            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip(), kb_display_name.strip())
+            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip(), kb_display_name.strip(), requester_user.user_id)
             return Created(body={"kb_id": kb_id, "details": "Base de conhecimento criada com sucesso"})
 
         except (MissingParameters, WrongTypeParameter) as err:
