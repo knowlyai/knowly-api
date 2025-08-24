@@ -1,14 +1,19 @@
 from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
+
+RequestDataType = TypeVar('RequestDataType')
+ResponseDataType = TypeVar('ResponseDataType')
 
 
-class IRequest(ABC):
+class IRequest(ABC, Generic[RequestDataType]):
 
     @property
-    def data(self) -> dict:
+    @abstractmethod
+    def data(self) -> RequestDataType:
         pass
 
 
-class IResponse(ABC):
+class IResponse(ABC, Generic[ResponseDataType]):
 
     @property
     @abstractmethod
@@ -17,5 +22,5 @@ class IResponse(ABC):
 
     @property
     @abstractmethod
-    def data(self) -> dict:
+    def data(self) -> ResponseDataType:
         pass

@@ -16,6 +16,22 @@ class MinorAgeError(BaseError):
     def __init__(self, message: str):
         super().__init__(f'Usuário é menor de idade: {message}')
 
+class ExternalServiceError(BaseError):
+    def __init__(self, service: str, message: str):
+        super().__init__(f'Erro no serviço {service}: {message}')
+
+class InfrastructureError(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Erro de infraestrutura: {message}')
+
+class DatabaseError(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Erro de banco de dados: {message}')
+
+class ConfigurationError(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Erro de configuração: {message}')
+
 class UserAlreadyExists(BaseError):
     def __init__(self, message: str):
         super().__init__(f'Usuário já existe: {message}')
