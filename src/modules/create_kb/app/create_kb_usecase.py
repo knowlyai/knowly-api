@@ -92,7 +92,7 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com AWS: {str(e)}")
 
-    def _create_kb(self, kb_name: str, kb_description: str, kb_display_name: str) -> str:
+    def _create_kb(self, kb_name: str, kb_description: str, kb_display_name: str, user_id: str) -> str:
         """Cria a base de conhecimento e retorna o ID"""
         embedding_id = uuid.uuid4().hex
         table_name = f"kb.embedding_{embedding_id}"
@@ -105,10 +105,10 @@ class CreateKbUseCase:
             self._create_rds_table(table_name, gin_idx, hnsw_idx)
 
             # Criar knowledge base no Bedrock
-            kb_id = self._create_bedrock_kb(kb_name, kb_description, table_name)
+            kb_id = self._create_bedrock_kb(kb_name, kb_description, table_name, user_id)
 
             # Salvar no DynamoDB
-            self._save_to_dynamodb(kb_id, embedding_id, kb_name, kb_description, kb_display_name)
+            self._save_to_dynamodb(kb_id, embedding_id, kb_name, kb_description, kb_display_name, user_id)
 
             return kb_id
 
@@ -174,7 +174,7 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com RDS: {str(e)}")
 
-    def _create_bedrock_kb(self, kb_name: str, kb_description: str, table_name: str) -> str:
+    def _create_bedrock_kb(self, kb_name: str, kb_description: str, table_name: str, user_id: str) -> str:
         """Cria a knowledge base no Bedrock"""
         try:
             resp_kb = bedrock.create_knowledge_base(
@@ -204,7 +204,7 @@ class CreateKbUseCase:
                     "type": "RDS",
                 },
                 tags={
-                    "user_id": "inserir aqui"
+                    "user_id": user_id
                 }
             )
 
@@ -225,14 +225,14 @@ class CreateKbUseCase:
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com Bedrock: {str(e)}")
 
-    def _save_to_dynamodb(self, kb_id: str, embedding_id: str, kb_name: str, kb_description: str, kb_display_name: str):
+    def _save_to_dynamodb(self, kb_id: str, embedding_id: str, kb_name: str, kb_description: str, kb_display_name: str, user_id: str):
         """Salva os dados no DynamoDB"""
         try:
             table.put_item(
                 Item={
                     "kb_id": kb_id,
                     "rds_table": f"embedding_{embedding_id}",
-                    "user_id": "inserir aqui",
+                    "user_id": user_id,
                     "name": kb_name,
                     "display_name": kb_display_name,
                     "description": kb_description,
@@ -265,7 +265,7 @@ class CreateKbUseCase:
         except:
             pass  # Ignore cleanup errors
 
-    def __call__(self, kb_name: str, kb_description: str, kb_display_name: str) -> str:
+    def __call__(self, kb_name: str, kb_description: str, kb_display_name: str, user_id: str) -> str:
         """Executa o caso de uso de criação de knowledge base"""
         try:
             # Verificar se já existe
@@ -273,7 +273,7 @@ class CreateKbUseCase:
                 raise DuplicatedItem(f"base de conhecimento com nome '{kb_name}'")
 
             # Criar a knowledge base
-            kb_id = self._create_kb(kb_name, kb_description, kb_display_name)
+            kb_id = self._create_kb(kb_name, kb_description, kb_display_name, user_id)
             return kb_id
 
         except (DuplicatedItem, ExternalServiceError, InfrastructureError,
