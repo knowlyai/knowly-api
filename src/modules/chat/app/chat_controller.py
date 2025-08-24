@@ -9,6 +9,8 @@ from src.shared.helpers.errors.usecase_errors import (
 )
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK, NotFound
+from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
+
 
 class ChatController:
     def __init__(self, chat_usecase: ChatUseCase):
@@ -30,6 +32,19 @@ class ChatController:
 
     def __call__(self, request: IRequest):
         try:
+            # Authorizer obrigatório
+            if request.data.get('requester_user') is None:
+                raise MissingParameters('requester_user')
+
+            requester_user = UserApiGatewayDTO.from_api_gateway(request.data.get('requester_user'))
+
+            if type(requester_user.user_id) != str:
+                raise WrongTypeParameter(
+                    field_name='user_id',
+                    field_type_expected='str',
+                    field_type_received=type(requester_user.user_id)
+                )
+
             kb_id = request.data.get("kb_id")
             model = request.data.get("model")
             prompt = request.data.get("prompt")
