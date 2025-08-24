@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.controllers.knowledge_base import router as knowledge_base_router
 from src.controllers.chat import router as chat_router
+from src.controllers.user import router as auth_router
 
 app = FastAPI(
     title="Knowly API",
@@ -18,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Knowledge Bases
+# Routers
 app.include_router(knowledge_base_router)
 app.include_router(chat_router)
+app.include_router(auth_router)
