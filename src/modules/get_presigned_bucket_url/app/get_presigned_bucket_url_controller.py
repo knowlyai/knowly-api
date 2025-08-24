@@ -8,6 +8,7 @@ from src.shared.helpers.errors.usecase_errors import (
     InfrastructureError,
     ConfigurationError
 )
+from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
 
 
 class GetPresignedBucketUrlController:
@@ -36,8 +37,21 @@ class GetPresignedBucketUrlController:
 
     def __call__(self, request: IRequest[GetPresignedBucketUrlRequest]):
         try:
+            # Authorizer obrigatório
+            if request.data.get('requester_user') is None:
+                raise MissingParameters('requester_user')
+
+            requester_user = UserApiGatewayDTO.from_api_gateway(request.data.get('requester_user'))
+
+            if type(requester_user.user_id) != str:
+                raise WrongTypeParameter(
+                    field_name='user_id',
+                    field_type_expected='str',
+                    field_type_received=type(requester_user.user_id)
+                )
+
             bucket = request.data.get("bucket")
-            user_id = request.data.get("user_id")
+            user_id = requester_user.user_id
             kb_id = request.data.get("kb_id")
             expires = request.data.get("expires", 900)
             max_size_mb = request.data.get("max_size_mb", 20)
