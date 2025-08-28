@@ -3,7 +3,7 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from .update_user_controller import UpdateUserController
 from .update_user_usecase import UpdateUserUseCase
 
-repo = Environments.get_user_repo()()
+repo = Environments.get_user_repo()
 usecase = UpdateUserUseCase(repo)
 controller = UpdateUserController(usecase)
 

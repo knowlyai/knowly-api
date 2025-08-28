@@ -3,7 +3,7 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from .delete_user_controller import DeleteUserController
 from .delete_user_usecase import DeleteUserUseCase
 
-repo = Environments.get_user_repo()()
+repo = Environments.get_user_repo()
 usecase = DeleteUserUseCase(repo)
 controller = DeleteUserController(usecase)
 

@@ -3,7 +3,7 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from .get_subscriptions_by_user_controller import GetUserSubscriptionsController
 from .get_subscriptions_by_user_usecase import GetUserSubscriptionsUseCase
 
-repo = Environments.get_user_repo()()
+repo = Environments.get_user_repo()
 usecase = GetUserSubscriptionsUseCase(repo=repo)
 controller = GetUserSubscriptionsController(usecase=usecase)
 
