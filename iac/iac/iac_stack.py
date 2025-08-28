@@ -10,6 +10,7 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from .lambda_stack import LambdaStack
 from .dynamo_stack import DynamoStack
 from .cognito_stack import CognitoStack
+from .bucket_stack import BucketStack
 
 
 class IacStack(Stack):
@@ -43,13 +44,19 @@ class IacStack(Stack):
 
         self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
 
+        stage = self.github_ref_name
+
+        self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
+
         ENVIRONMENT_VARIABLES = {
-            "STAGE": "DEV",
+            "STAGE": stage,
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
+            "S3_BUCKET_NAME": self.bucket_stack.bucket_name,
+            "S3_BUCKET_ARN": self.bucket_stack.bucket_arn,
         }
 
 
