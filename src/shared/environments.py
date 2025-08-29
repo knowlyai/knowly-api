@@ -38,7 +38,9 @@ class Environments:
         if "STAGE" not in os.environ or os.environ["STAGE"] == STAGE.DOTENV.value:
             self._configure_local()
 
-        self.stage = STAGE[os.environ.get("STAGE")]
+        # Corrigindo: converter para maiúsculo para corresponder ao enum
+        stage_value = os.environ.get("STAGE", "").upper()
+        self.stage = STAGE[stage_value]
         self.mss_name = os.environ.get("MSS_NAME")
         
         if self.stage == STAGE.TEST:
@@ -84,4 +86,3 @@ class Environments:
 
     def __repr__(self):
         return self.__dict__
-

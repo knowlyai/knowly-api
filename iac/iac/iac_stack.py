@@ -20,6 +20,7 @@ class IacStack(Stack):
 
         self.github_ref_name = os.environ.get("GITHUB_REF_NAME")
         self.aws_region = os.environ.get("AWS_REGION")
+        stage = self.github_ref_name
 
         self.rest_api = RestApi(self, "KnowlyRestApi",
                                 rest_api_name="KnowlyRestApi",
@@ -43,8 +44,6 @@ class IacStack(Stack):
         self.dynamo_table = DynamoStack(self)
 
         self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
-
-        stage = self.github_ref_name
 
         self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
 
