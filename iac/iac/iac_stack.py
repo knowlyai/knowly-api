@@ -4,13 +4,14 @@ from aws_cdk import (
     Stack,
     # aws_sqs as sqs,
 )
-from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
+from constructs import Construct
 
-from .lambda_stack import LambdaStack
-from .dynamo_stack import DynamoStack
-from .cognito_stack import CognitoStack
+from .aurora_stack import AuroraStack
 from .bucket_stack import BucketStack
+from .cognito_stack import CognitoStack
+from .dynamo_stack import DynamoStack
+from .lambda_stack import LambdaStack
 
 
 class IacStack(Stack):
@@ -47,6 +48,8 @@ class IacStack(Stack):
 
         self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
 
+        self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}')
+
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
@@ -56,6 +59,8 @@ class IacStack(Stack):
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
             "S3_BUCKET_NAME": self.bucket_stack.bucket_name,
             "S3_BUCKET_ARN": self.bucket_stack.bucket_arn,
+            "RDS_CLUSTER_ARN": self.aurora_stack.cluster_arn,
+            "RDS_SECRET_ARN": self.aurora_stack.secret_arn,
         }
 
 
