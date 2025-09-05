@@ -48,7 +48,7 @@ class IacStack(Stack):
 
         self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
 
-        self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}')
+        self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}', env=kwargs.get('env'))
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
