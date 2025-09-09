@@ -1,14 +1,14 @@
 from aws_cdk import (
-    Stack,
+    # Stack,  # removido: agora é um Construct
     aws_rds,
     aws_ec2, Duration,
 )
 from constructs import Construct
 
-class AuroraStack(Stack):
+class AuroraStack(Construct):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-        super().__init__(scope, construct_id, **kwargs)
+        super().__init__(scope, construct_id)
 
         # Use default VPC
         default_vpc = aws_ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
@@ -45,4 +45,3 @@ class AuroraStack(Stack):
 
         self.cluster_arn = self.aurora_serverless_v2.cluster_arn
         self.secret_arn = self.aurora_serverless_v2.secret.secret_arn
-
