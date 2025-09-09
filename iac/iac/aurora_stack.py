@@ -32,6 +32,7 @@ class AuroraStack(Stack):
                                                                 version=aws_rds.AuroraPostgresEngineVersion.VER_16_3),
                                                             serverless_v2_min_capacity=0,
                                                             serverless_v2_max_capacity=2,
+                                                            SecondsUntilAutoPause=900,
                                                             writer=aws_rds.ClusterInstance.serverless_v2("writer"),
                                                             vpc=default_vpc,
                                                             vpc_subnets=aws_ec2.SubnetSelection(
