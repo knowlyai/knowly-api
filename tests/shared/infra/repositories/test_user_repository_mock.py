@@ -6,6 +6,7 @@ import pytest
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -290,3 +291,27 @@ class TestUserRepositoryMock:
                 user_id="nonexistent-user-id",
                 new_plan=PlanEnum.SI
             )
+
+    def test_create_knowledge_base(self):
+        repo = UserRepositoryMock()
+        initial_count = len(repo.kbs)
+
+        kb = KnowledgeBase(
+            id="Z9Y8X7W6V5",
+            name="KB_Nova",
+            description="KB para testes",
+            created_at="2025-03-10T00:00:00Z",
+            updated_at="2025-03-10T00:00:00Z",
+            status="ACTIVE",
+            documents_count=0,
+            categories=["geral"],
+        )
+
+        created_kb = repo.create_knowledge_base(
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            kb=kb,
+        )
+
+        assert created_kb == kb
+        assert len(repo.kbs) == initial_count + 1
+        assert repo.kbs[-1] == kb

@@ -5,6 +5,7 @@ from typing import List, Optional
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
@@ -143,6 +144,39 @@ class UserRepositoryMock(IUserRepository):
             ),
         ]
 
+        self.kbs = [
+            KnowledgeBase(
+                id="A1B2C3D4E5",
+                name="KB_Principal",
+                description="Base principal de conhecimento",
+                created_at="2025-01-01T00:00:00Z",
+                updated_at="2025-01-02T00:00:00Z",
+                status="ACTIVE",
+                documents_count=2,
+                categories=["geral", "produtos"],
+            ),
+            KnowledgeBase(
+                id="123456ABCD",
+                name="KB-Secundaria",
+                description="Base secundária para testes",
+                created_at="2025-01-03T00:00:00Z",
+                updated_at="2025-01-03T12:00:00Z",
+                status="INACTIVE",
+                documents_count=0,
+                categories=[],
+            ),
+            KnowledgeBase(
+                id="abcDEF1234",
+                name="KB_3",
+                description="Terceira base de conhecimento",
+                created_at="2025-02-01T00:00:00Z",
+                updated_at="2025-02-01T00:00:00Z",
+                status="ACTIVE",
+                documents_count=5,
+                categories=["faq"],
+            ),
+        ]
+
     def get_user(self, user_id: str) -> User:
         for user in self.users:
             if user.user_id == user_id:
@@ -161,7 +195,8 @@ class UserRepositoryMock(IUserRepository):
 
         raise NoItemsFound("user_id")
 
-    def update_user(self, user_id: str, update_date: int, new_name: Optional[str] = None, new_email: Optional[str] = None, new_cellphone: Optional[str] = None, new_address: Optional[str] = None, new_cep: Optional[str] = None ) -> User:
+    def update_user(self, user_id: str, update_date: int, new_name: Optional[str] = None, new_email: Optional[str] = None,
+                    new_cellphone: Optional[str] = None, new_address: Optional[str] = None, new_cep: Optional[str] = None ) -> User:
         for user in self.users:
             if user.user_id == user_id:
                 if new_name is not None:
@@ -214,3 +249,7 @@ class UserRepositoryMock(IUserRepository):
                 self.subscriptions.append(new_subscription)
                 return new_subscription
         raise NoItemsFound("user_id")
+
+    def create_knowledge_base(self, user_id: str, kb: KnowledgeBase) -> KnowledgeBase:
+        self.kbs.append(kb)
+        return kb
