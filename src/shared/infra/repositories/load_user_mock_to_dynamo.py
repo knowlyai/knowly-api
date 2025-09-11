@@ -102,8 +102,8 @@ def load_mock_to_local_dynamo():
 
     count = 0
     for kb in mock_repo.kbs:
-        print(f"Loading knowledge base {kb.id} for user {kb.user_id}")
-        dynamo_repo.create_knowledge_base(kb)
+        print(f"Loading knowledge base {kb.id}")
+        dynamo_repo.create_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932", kb=kb)
         count += 1
 
     print(f"{count} knowledge bases loaded to dynamo!")
