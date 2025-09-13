@@ -21,6 +21,8 @@ class TestKnowledgeBaseDynamoDTO:
             status=kb.status,
             documents_count=kb.documents_count,
             categories=kb.categories,
+            display_name=kb.display_name,
+            rds_table=kb.rds_table,
         )
 
         assert dto == expected
@@ -42,6 +44,8 @@ class TestKnowledgeBaseDynamoDTO:
             "status": kb.status,
             "documents_count": Decimal(kb.documents_count),
             "categories": kb.categories,
+            "display_name": kb.display_name,
+            "rds_table": kb.rds_table,
         }
 
         assert item == expected
@@ -57,6 +61,8 @@ class TestKnowledgeBaseDynamoDTO:
             "status": "ACTIVE",
             "documents_count": Decimal("2"),
             "categories": ["geral", "produtos"],
+            "display_name": "KB Principal",
+            "rds_table": "embedding_A1B2C3D4E5",
         }
 
         dto = KnowledgeBaseDynamoDTO.from_dynamo(dynamo_item)
@@ -70,6 +76,8 @@ class TestKnowledgeBaseDynamoDTO:
             status="ACTIVE",
             documents_count=2,
             categories=["geral", "produtos"],
+            display_name="KB Principal",
+            rds_table="embedding_A1B2C3D4E5",
         )
 
         assert dto == expected
@@ -84,6 +92,8 @@ class TestKnowledgeBaseDynamoDTO:
             "updated_at": "2025-01-01T00:00:00Z",
             "status": "INACTIVE",
             "documents_count": Decimal("0"),
+            "display_name": "KB Sem Cats",
+            "rds_table": "embedding_123456ABCD",
             # sem 'categories'
         }
 
@@ -91,6 +101,8 @@ class TestKnowledgeBaseDynamoDTO:
 
         assert dto.categories == []
         assert dto.documents_count == 0
+        assert dto.display_name == "KB Sem Cats"
+        assert dto.rds_table == "embedding_123456ABCD"
 
     def test_to_entity(self):
         dto = KnowledgeBaseDynamoDTO(
@@ -102,6 +114,8 @@ class TestKnowledgeBaseDynamoDTO:
             status="ACTIVE",
             documents_count=5,
             categories=["faq"],
+            display_name="KB 3",
+            rds_table="embedding_abcDEF1234",
         )
 
         kb = dto.to_entity()
@@ -115,6 +129,8 @@ class TestKnowledgeBaseDynamoDTO:
         assert kb.status == "ACTIVE"
         assert kb.documents_count == 5
         assert kb.categories == ["faq"]
+        assert kb.display_name == "KB 3"
+        assert kb.rds_table == "embedding_abcDEF1234"
 
     def test_from_dynamo_to_entity(self):
         dynamo_item = {
@@ -127,6 +143,8 @@ class TestKnowledgeBaseDynamoDTO:
             "status": "ACTIVE",
             "documents_count": Decimal("3"),
             "categories": ["a", "b"],
+            "display_name": "KB Principal",
+            "rds_table": "embedding_A1b2C3d4E5",
         }
 
         dto = KnowledgeBaseDynamoDTO.from_dynamo(dynamo_item)
@@ -141,6 +159,8 @@ class TestKnowledgeBaseDynamoDTO:
             status="ACTIVE",
             documents_count=3,
             categories=["a", "b"],
+            display_name="KB Principal",
+            rds_table="embedding_A1b2C3d4E5",
         )
 
         assert kb.id == expected.id
@@ -151,4 +171,5 @@ class TestKnowledgeBaseDynamoDTO:
         assert kb.status == expected.status
         assert kb.documents_count == expected.documents_count
         assert kb.categories == expected.categories
-
+        assert kb.display_name == expected.display_name
+        assert kb.rds_table == expected.rds_table

@@ -26,8 +26,13 @@ class Environments:
     dynamo_table_name: str
     dynamo_partition_key: str
     dynamo_sort_key: str
-    cloud_frontget_user_presenter_distribution_domain: str
-    mss_name: str 
+    mss_name: str
+    rds_cluster_arn: str
+    rds_secret_arn: str
+    s3_bucket_arn: str
+    s3_bucket_name: str
+    bedrock_role_arn: str
+    embedding_model_arn: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -50,7 +55,6 @@ class Environments:
             self.dynamo_table_name = "user_mss_template-table"
             self.dynamo_partition_key = "PK"
             self.dynamo_sort_key = "SK"
-            self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
@@ -59,7 +63,14 @@ class Environments:
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
             self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
-            self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            self.rds_cluster_arn = os.environ.get("RDS_CLUSTER_ARN")
+            self.rds_secret_arn = os.environ.get("RDS_SECRET_ARN")
+            self.s3_bucket_arn = os.environ.get("S3_BUCKET_ARN")
+            self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+            self.bedrock_role_arn = os.environ.get("BEDROCK_ROLE_ARN")
+            self.embedding_model_arn = os.environ.get("EMBEDDING_MODEL_ARN")
+
+
 
     @staticmethod
     def get_user_repo() -> IUserRepository:

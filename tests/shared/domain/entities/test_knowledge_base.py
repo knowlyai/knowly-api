@@ -15,6 +15,8 @@ class TestKnowledgeBase:
             status="ACTIVE",
             documents_count=0,
             categories=["geral"],
+            display_name=name,
+            rds_table=f"embedding_{kb_id}",
         )
 
     def test_kb_with_valid_id(self):

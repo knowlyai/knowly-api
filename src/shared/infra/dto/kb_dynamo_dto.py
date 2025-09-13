@@ -12,6 +12,8 @@ class KnowledgeBaseDynamoDTO:
     status: str
     documents_count: int
     categories: list[str]
+    display_name: str
+    rds_table: str
 
     def __init__(
         self,
@@ -23,6 +25,8 @@ class KnowledgeBaseDynamoDTO:
         status: str,
         documents_count: int,
         categories: list[str],
+        display_name: str,
+        rds_table: str,
     ):
         self.id = id
         self.name = name
@@ -32,6 +36,8 @@ class KnowledgeBaseDynamoDTO:
         self.status = status
         self.documents_count = documents_count
         self.categories = categories
+        self.display_name = display_name
+        self.rds_table = rds_table
 
     @staticmethod
     def from_entity(kb: KnowledgeBase) -> "KnowledgeBaseDynamoDTO":
@@ -47,6 +53,8 @@ class KnowledgeBaseDynamoDTO:
             status=kb.status,
             documents_count=kb.documents_count,
             categories=kb.categories,
+            display_name=kb.display_name,
+            rds_table=kb.rds_table,
         )
 
     def to_dynamo(self) -> dict:
@@ -63,6 +71,8 @@ class KnowledgeBaseDynamoDTO:
             "status": self.status,
             "documents_count": Decimal(self.documents_count),
             "categories": self.categories,
+            "display_name": self.display_name,
+            "rds_table": self.rds_table,
         }
 
     @staticmethod
@@ -79,6 +89,8 @@ class KnowledgeBaseDynamoDTO:
             status=item["status"],
             documents_count=int(item["documents_count"]),
             categories=list(item.get("categories", [])),
+            display_name=item.get("display_name", item.get("name", "")),
+            rds_table=item.get("rds_table", ""),
         )
 
     def to_entity(self) -> KnowledgeBase:
@@ -94,17 +106,16 @@ class KnowledgeBaseDynamoDTO:
             status=self.status,
             documents_count=self.documents_count,
             categories=self.categories,
+            display_name=self.display_name,
+            rds_table=self.rds_table,
         )
 
     def __repr__(self):
         return (
             f"KnowledgeBaseDynamoDTO("
-            f"id={self.id!r}, "
-            f"name={self.name!r}, "
-            f"status={self.status!r}, "
-            f"documents_count={self.documents_count}, "
-            f"categories={self.categories!r}"
-            f")"
+            f"id={self.id!r}, name={self.name!r}, status={self.status!r}, "
+            f"documents_count={self.documents_count}, categories={self.categories!r}, "
+            f"display_name={self.display_name!r}, rds_table={self.rds_table!r})"
         )
 
     def __eq__(self, other):
@@ -118,6 +129,7 @@ class KnowledgeBaseDynamoDTO:
             self.updated_at == other.updated_at and
             self.status == other.status and
             self.documents_count == other.documents_count and
-            self.categories == other.categories
+            self.categories == other.categories and
+            self.display_name == other.display_name and
+            self.rds_table == other.rds_table
         )
-

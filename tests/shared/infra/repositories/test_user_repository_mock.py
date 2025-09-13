@@ -305,6 +305,8 @@ class TestUserRepositoryMock:
             status="ACTIVE",
             documents_count=0,
             categories=["geral"],
+            display_name="KB Nova",
+            rds_table="embedding_Z9Y8X7W6V5",
         )
 
         created_kb = repo.create_knowledge_base(

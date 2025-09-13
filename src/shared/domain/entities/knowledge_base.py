@@ -13,6 +13,8 @@ class KnowledgeBase:
         status: str,
         documents_count: int,
         categories: list[str],
+        display_name: str,
+        rds_table: str,
     ):
         if not KnowledgeBase.validate_id(id):
             raise EntityError("id")
@@ -26,6 +28,8 @@ class KnowledgeBase:
         self.status = status
         self.documents_count = documents_count
         self.categories = categories
+        self.display_name = display_name
+        self.rds_table = rds_table
 
     @staticmethod
     def validate_id(value: str) -> bool:
@@ -52,7 +56,9 @@ class KnowledgeBase:
             "status": self.status,
             "documents_count": self.documents_count,
             "categories": self.categories,
+            "display_name": self.display_name,
+            "rds_table": self.rds_table,
         }
 
     def __repr__(self):
-        return f"KnowledgeBase(id={self.id}, name={self.name}, status={self.status})"
+        return f"KnowledgeBase(id={self.id}, name={self.name}, status={self.status}, display_name={self.display_name}, rds_table={self.rds_table})"

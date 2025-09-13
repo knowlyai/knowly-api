@@ -154,6 +154,8 @@ class UserRepositoryMock(IUserRepository):
                 status="ACTIVE",
                 documents_count=2,
                 categories=["geral", "produtos"],
+                display_name="KB Principal",
+                rds_table="embedding_A1B2C3D4E5",
             ),
             KnowledgeBase(
                 id="123456ABCD",
@@ -164,6 +166,8 @@ class UserRepositoryMock(IUserRepository):
                 status="INACTIVE",
                 documents_count=0,
                 categories=[],
+                display_name="KB Secundaria",
+                rds_table="embedding_123456ABCD",
             ),
             KnowledgeBase(
                 id="abcDEF1234",
@@ -174,6 +178,8 @@ class UserRepositoryMock(IUserRepository):
                 status="ACTIVE",
                 documents_count=5,
                 categories=["faq"],
+                display_name="KB 3",
+                rds_table="embedding_abcDEF1234",
             ),
         ]
 
