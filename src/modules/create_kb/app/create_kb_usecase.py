@@ -219,12 +219,5 @@ class CreateKbUseCase:
             pass
 
     def __call__(self, kb_name: str, kb_description: str, kb_display_name: str, user_id: str) -> str:
-        try:
             kb_id = self._create_kb(kb_name, kb_description, kb_display_name, user_id)
             return kb_id
-        except (DuplicatedItem, ExternalServiceError, InfrastructureError, DatabaseError, ConfigurationError) as e:
-            raise e
-        except Exception as e:
-            raise InfrastructureError(
-                f"Erro inesperado ao criar base de conhecimento: {str(e)}"
-            )
