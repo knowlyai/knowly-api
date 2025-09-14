@@ -109,10 +109,18 @@ class LambdaStack(Construct):
             requires_authorizer=True
         )
 
+        self.get_kb_function = self._add_method_to_resource(
+            module_name="get_kb",
+            http_method="GET",
+            target_resource=kb_resource,
+            environment_variables=environment_variables,
+            requires_authorizer=True
+        )
+
         self.functions_that_need_dynamo_permissions = [self.get_user_function, self.create_user_function,
                                                 self.delete_user_function, self.update_user_function,
                                                 self.get_transactions_by_user_function, self.get_subscriptions_by_user_function,
-                                                self.update_subscription_function]
+                                                self.update_subscription_function, self.create_kb_function, self.get_kb_function]
 
     def _add_method_to_resource(
             self,
