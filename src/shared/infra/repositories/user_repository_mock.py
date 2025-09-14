@@ -259,3 +259,12 @@ class UserRepositoryMock(IUserRepository):
     def create_knowledge_base(self, user_id: str, kb: KnowledgeBase) -> KnowledgeBase:
         self.kbs.append(kb)
         return kb
+
+    def get_knowledge_base(self, user_id: str, kb_id: str = None) -> List[KnowledgeBase]:
+        # No mock não armazenamos user_id associado às KBs, então assumimos que todas pertencem ao usuário passado.
+        if kb_id:
+            for kb in self.kbs:
+                if kb.id == kb_id:
+                    return [kb]
+            raise NoItemsFound("kb_id")
+        return list(self.kbs)

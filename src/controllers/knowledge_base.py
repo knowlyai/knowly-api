@@ -16,6 +16,7 @@ from src.modules.delete_kb_file.app.delete_kb_file_controller import DeleteKbFil
 from src.modules.delete_kb_file.app.delete_kb_file_usecase import DeleteKbFileUseCase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from pydantic import BaseModel
+from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
 
 router = APIRouter(prefix="/kb", tags=["Knowledge Bases"])
 
@@ -181,7 +182,7 @@ async def delete_kb_file(bucket: str, kb_id: str, file_name: str, token: Annotat
 @router.get("", summary="Lista as bases de conhecimento")
 async def list_kbs(kb_id: Optional[str] = Query(None, description="ID da base de conhecimento"), token: Annotated[HTTPAuthorizationCredentials, Depends(security)] = None):
     try:
-        use_case = GetKbUseCase()
+        use_case = GetKbUseCase(repo=UserRepositoryDynamo())
         controller = GetKbController(use_case)
         params = {
             "kb_id": kb_id

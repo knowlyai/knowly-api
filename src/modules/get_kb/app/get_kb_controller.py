@@ -37,9 +37,9 @@ class GetKbController:
             # Validar kb_id se fornecido
             if kb_id is not None and type(kb_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_id.__class__.__name__
+                    field_name="kb_id",
+                    field_type_expected="str",
+                    field_type_received=kb_id.__class__.__name__
                 )
 
             # Executar use case

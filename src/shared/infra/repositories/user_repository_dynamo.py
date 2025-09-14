@@ -201,3 +201,26 @@ class UserRepositoryDynamo(IUserRepository):
             is_decimal=True,
         )
         return kb
+
+    def get_knowledge_base(self, user_id: str, kb_id: str = None) -> List[KnowledgeBase]:
+        from boto3.dynamodb.conditions import Key
+
+        if kb_id:
+            resp = self.dynamo.get_item(
+                partition_key=self.kb_partition_key_format(user_id),
+                sort_key=self.kb_sort_key_format(kb_id)
+            )
+            item = resp.get('Item')
+            if item is None:
+                raise NoItemsFound("kb_id")
+            kb_dto = KnowledgeBaseDynamoDTO.from_dynamo(item)
+            return [kb_dto.to_entity()]
+
+        # Sem kb_id: listar todas
+        resp = self.dynamo.query(
+            key_condition_expression=Key('PK').eq(self.kb_partition_key_format(user_id)) & Key('SK').begins_with('KB#')
+        )
+        kbs: List[KnowledgeBase] = []
+        for item in resp.get('Items', []):
+            kbs.append(KnowledgeBaseDynamoDTO.from_dynamo(item).to_entity())
+        return kbs

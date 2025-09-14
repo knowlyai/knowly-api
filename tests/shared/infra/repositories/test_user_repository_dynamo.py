@@ -340,6 +340,8 @@ class TestUserRepositoryDynamo:
             status="ACTIVE",
             documents_count=0,
             categories=["geral"],
+            display_name="KB Teste",
+            rds_table="embedding_A1b2C3d4E5",
         )
 
         created = repo.create_knowledge_base(
@@ -348,3 +350,23 @@ class TestUserRepositoryDynamo:
         )
 
         assert created == kb
+
+    @pytest.mark.skip(reason="Needs dynamoDB")
+    def test_get_knowledge_base_all(self):
+        os.environ["STAGE"] = "TEST"
+        repo = UserRepositoryDynamo()
+
+        kbs = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(kbs) == 4
+
+    @pytest.mark.skip(reason="Needs dynamoDB")
+    def test_get_knowledge_base_specific(self):
+        os.environ["STAGE"] = "TEST"
+        repo = UserRepositoryDynamo()
+
+
+        resultado = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932", kb_id="A1B2C3D4E5")
+        assert len(resultado) == 1
+        assert resultado[0].id == "A1B2C3D4E5"
+        assert resultado[0].name == "KB_Principal"
+
