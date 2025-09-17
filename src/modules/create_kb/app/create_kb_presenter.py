@@ -1,5 +1,5 @@
-from src.modules.create_kb.app.create_kb_controller import CreateKbController
-from src.modules.create_kb.app.create_kb_usecase import CreateKbUseCase
+from .create_kb_controller import CreateKbController
+from .create_kb_usecase import CreateKbUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 

@@ -67,9 +67,9 @@ class CreateKbController:
 
             if type(kb_name) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_name",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_name.__class__.__name__
+                    field_name="kb_name",
+                    field_type_expected="str",
+                    field_type_received=kb_name.__class__.__name__
                 )
 
             if not kb_description:
@@ -77,9 +77,9 @@ class CreateKbController:
 
             if type(kb_description) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_description",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_description.__class__.__name__
+                    field_name="kb_description",
+                    field_type_expected="str",
+                    field_type_received=kb_description.__class__.__name__
                 )
 
             if not kb_display_name:
@@ -87,9 +87,9 @@ class CreateKbController:
 
             if type(kb_display_name) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_display_name",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_display_name.__class__.__name__
+                    field_name="kb_display_name",
+                    field_type_expected="str",
+                    field_type_received=kb_display_name.__class__.__name__
                 )
 
             # Validar parâmetros na controller
