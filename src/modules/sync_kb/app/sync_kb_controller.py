@@ -60,9 +60,9 @@ class SyncKbController:
 
             if type(bucket_name) != str:
                 raise WrongTypeParameter(
-                    fieldName="bucket_name",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=bucket_name.__class__.__name__
+                    field_name="bucket_name",
+                    field_type_expected="str",
+                    field_type_received=bucket_name.__class__.__name__
                 )
 
             if not kb_id:
@@ -70,9 +70,9 @@ class SyncKbController:
 
             if type(kb_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_id.__class__.__name__
+                    field_name="kb_id",
+                    field_type_expected="str",
+                    field_type_received=kb_id.__class__.__name__
                 )
 
             # Validar parâmetros na controller

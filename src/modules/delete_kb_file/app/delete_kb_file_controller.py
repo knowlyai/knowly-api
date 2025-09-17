@@ -65,25 +65,25 @@ class DeleteKbFileController:
                 raise MissingParameters('bucket')
             if type(bucket) != str:
                 raise WrongTypeParameter(
-                    fieldName="bucket",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=bucket.__class__.__name__
+                    field_name="bucket",
+                    field_type_expected="str",
+                    field_type_received=bucket.__class__.__name__
                 )
             if not kb_id:
                 raise MissingParameters('kb_id')
             if type(kb_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_id.__class__.__name__
+                    field_name="kb_id",
+                    field_type_expected="str",
+                    field_type_received=kb_id.__class__.__name__
                 )
             if not file_name:
                 raise MissingParameters('file_name')
             if type(file_name) != str:
                 raise WrongTypeParameter(
-                    fieldName="file_name",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=file_name.__class__.__name__
+                    field_name="file_name",
+                    field_type_expected="str",
+                    field_type_received=file_name.__class__.__name__
                 )
 
             # Validar parâmetros na controller

@@ -117,6 +117,26 @@ class LambdaStack(Construct):
             requires_authorizer=True
         )
 
+        # Sub-recurso para URL pré-assinada
+        kb_presigned_resource = kb_resource.add_resource("presigned-url")
+        self.get_presigned_bucket_url_function = self._add_method_to_resource(
+            module_name="get_presigned_bucket_url",
+            http_method="GET",
+            target_resource=kb_presigned_resource,
+            environment_variables=environment_variables,
+            requires_authorizer=True
+        )
+
+        # Sub-recurso para deletar arquivo da KB
+        kb_file_resource = kb_resource.add_resource("file")
+        self.delete_kb_file_function = self._add_method_to_resource(
+            module_name="delete_kb_file",
+            http_method="DELETE",
+            target_resource=kb_file_resource,
+            environment_variables=environment_variables,
+            requires_authorizer=True
+        )
+
         self.functions_that_need_dynamo_permissions = [self.get_user_function, self.create_user_function,
                                                 self.delete_user_function, self.update_user_function,
                                                 self.get_transactions_by_user_function, self.get_subscriptions_by_user_function,

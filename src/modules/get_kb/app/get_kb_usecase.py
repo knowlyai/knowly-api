@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 from dotenv import load_dotenv
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import (
     InfrastructureError,
     DatabaseError,
@@ -14,6 +15,8 @@ from src.shared.helpers.errors.usecase_errors import (
 )
 
 load_dotenv()
+
+envs = Environments.get_envs()
 
 class GetKbUseCase:
     def __init__(self, repo: IUserRepository):
@@ -71,8 +74,8 @@ class GetKbUseCase:
 
     def _get_kb_files_and_size(self, user_id: str, kb_id: str):
         try:
-            bucket_name = 'knowly-knowledge-bases-files'
-            region = os.getenv("AWS_REGION_NAME", "us-east-1")
+            bucket_name = envs.s3_bucket_name
+            region = envs.region
             prefix = f"{user_id}/{kb_id}/"
 
             files = []
