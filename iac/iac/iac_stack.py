@@ -61,6 +61,7 @@ class IacStack(Stack):
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
+            "AWS_REGION": self.region,
             "AWS_REGION_NAME": self.region,
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
             "S3_BUCKET_NAME": self.bucket_stack.bucket_name,
@@ -138,4 +139,26 @@ class IacStack(Stack):
         delete_kb_file_fn.add_to_role_policy(iam.PolicyStatement(
             actions=["s3:GetObject", "s3:DeleteObject"],
             resources=[f"{self.bucket_stack.bucket_arn}/*"]
+        ))
+
+        # --- Permissões Bedrock para sync_kb ---
+        sync_kb_fn = self.lambda_stack.sync_kb_function
+        sync_kb_fn.add_to_role_policy(iam.PolicyStatement(
+            actions=[
+                "bedrock:ListDataSources",
+                "bedrock:CreateDataSource",
+                "bedrock:StartIngestionJob"
+            ],
+            resources=["*"]
+        ))
+
+        # --- Permissões Bedrock Runtime para chat ---
+        chat_fn = self.lambda_stack.chat_function
+        chat_fn.add_to_role_policy(iam.PolicyStatement(
+            actions=[
+                "bedrock:RetrieveAndGenerate",
+                "bedrock:Retrieve",
+                "bedrock:InvokeModel"
+            ],
+            resources=["*"]
         ))
