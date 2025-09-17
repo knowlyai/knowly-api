@@ -61,7 +61,7 @@ class IacStack(Stack):
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
-            "AWS_REGION": self.region,
+            "AWS_REGION_NAME": self.region,
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
             "S3_BUCKET_NAME": self.bucket_stack.bucket_name,
             "S3_BUCKET_ARN": self.bucket_stack.bucket_arn,
