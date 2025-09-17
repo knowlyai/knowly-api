@@ -54,31 +54,31 @@ class ChatController:
                 raise MissingParameters('kb_id')
             if type(kb_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_id.__class__.__name__
+                    field_name="kb_id",
+                    field_type_expected="str",
+                    field_type_received=kb_id.__class__.__name__
                 )
             if not model:
                 raise MissingParameters('model')
             if type(model) != Models:
                 raise WrongTypeParameter(
-                    fieldName="model",
-                    fieldTypeExpected="Models",
-                    fieldTypeReceived=model.__class__.__name__
+                    field_name="model",
+                    field_type_expected="Models",
+                    field_type_received=model.__class__.__name__
                 )
             if not prompt:
                 raise MissingParameters('prompt')
             if type(prompt) != str:
                 raise WrongTypeParameter(
-                    fieldName="prompt",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=prompt.__class__.__name__
+                    field_name="prompt",
+                    field_type_expected="str",
+                    field_type_received=prompt.__class__.__name__
                 )
             if type(top_k) != int:
                 raise WrongTypeParameter(
-                    fieldName="top_k",
-                    fieldTypeExpected="int",
-                    fieldTypeReceived=top_k.__class__.__name__
+                    field_name="top_k",
+                    field_type_expected="int",
+                    field_type_received=top_k.__class__.__name__
                 )
 
             # Validar parâmetros na controller

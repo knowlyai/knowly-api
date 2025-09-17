@@ -6,6 +6,7 @@ import pytest
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -290,3 +291,78 @@ class TestUserRepositoryMock:
                 user_id="nonexistent-user-id",
                 new_plan=PlanEnum.SI
             )
+
+    def test_create_knowledge_base(self):
+        repo = UserRepositoryMock()
+        initial_count = len(repo.kbs)
+
+        kb = KnowledgeBase(
+            id="Z9Y8X7W6V5",
+            name="KB_Nova",
+            description="KB para testes",
+            created_at="2025-03-10T00:00:00Z",
+            updated_at="2025-03-10T00:00:00Z",
+            status="ACTIVE",
+            documents_count=0,
+            categories=["geral"],
+            display_name="KB Nova",
+            rds_table="embedding_Z9Y8X7W6V5",
+        )
+
+        created_kb = repo.create_knowledge_base(
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            kb=kb,
+        )
+
+        assert created_kb == kb
+        assert len(repo.kbs) == initial_count + 1
+        assert repo.kbs[-1] == kb
+
+    def test_get_knowledge_base_all(self):
+        repo = UserRepositoryMock()
+        kbs = repo.get_knowledge_base(user_id="qualquer")
+        # Mock contém 3 iniciais
+        assert isinstance(kbs, list)
+        assert len(kbs) >= 3
+        ids = {kb.id for kb in kbs}
+        assert {"A1B2C3D4E5", "123456ABCD", "abcDEF1234"}.issubset(ids)
+
+    def test_get_knowledge_base_specific(self):
+        repo = UserRepositoryMock()
+        kbs = repo.get_knowledge_base(user_id="qualquer", kb_id="123456ABCD")
+        assert len(kbs) == 1
+        assert kbs[0].id == "123456ABCD"
+        assert kbs[0].name.startswith("KB")
+
+    def test_get_knowledge_base_not_found(self):
+        repo = UserRepositoryMock()
+        with pytest.raises(NoItemsFound):
+            repo.get_knowledge_base(user_id="qualquer", kb_id="ZZZZZZZZZZ")
+
+    def test_get_knowledge_base_empty(self):
+        repo = UserRepositoryMock()
+        # esvazia lista para simular usuário sem KBs
+        repo.kbs = []
+        kbs = repo.get_knowledge_base(user_id="qualquer")
+        assert kbs == []
+
+    def test_get_knowledge_base_after_create(self):
+        repo = UserRepositoryMock()
+        novo = KnowledgeBase(
+            id="Q1W2E3R4T5",
+            name="KB_Temporaria",
+            description="Teste criação e listagem",
+            created_at="2025-04-01T00:00:00Z",
+            updated_at="2025-04-01T00:00:00Z",
+            status="ACTIVE",
+            documents_count=1,
+            categories=["temp"],
+            display_name="KB Temp",
+            rds_table="embedding_Q1W2E3R4T5",
+        )
+        repo.create_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932", kb=novo)
+        lista = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932")
+        assert any(k.id == "Q1W2E3R4T5" for k in lista)
+        especifica = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932", kb_id="Q1W2E3R4T5")
+        assert len(especifica) == 1 and especifica[0].id == "Q1W2E3R4T5"
+

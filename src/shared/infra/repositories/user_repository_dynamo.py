@@ -3,6 +3,7 @@ import uuid
 from decimal import Decimal
 from typing import List, Optional
 
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
@@ -14,6 +15,7 @@ from src.shared.infra.dto.subscription_dynamo_dto import SubscriptionDynamoDTO
 from src.shared.infra.dto.transaction_dynamo_dto import TransactionDynamoDTO
 from src.shared.infra.dto.user_dynamo_dto import UserDynamoDTO
 from src.shared.infra.external.dynamo.datasources.dynamo_datasource import DynamoDatasource
+from src.shared.infra.dto.kb_dynamo_dto import KnowledgeBaseDynamoDTO
 
 
 class UserRepositoryDynamo(IUserRepository):
@@ -42,12 +44,23 @@ class UserRepositoryDynamo(IUserRepository):
     def transaction_sort_key_format(tran_id: str) -> str:
         return f"TRAN#{tran_id}"
 
+    @staticmethod
+    def kb_partition_key_format(user_id: str) -> str:
+        return f"USER#{user_id}"
+
+    @staticmethod
+    def kb_sort_key_format(kb_id: str) -> str:
+        return f"KB#{kb_id}"
+
     def __init__(self):
-        self.dynamo = DynamoDatasource(endpoint_url=Environments.get_envs().endpoint_url,
-                                       dynamo_table_name=Environments.get_envs().dynamo_table_name,
-                                       region=Environments.get_envs().region,
-                                       partition_key=Environments.get_envs().dynamo_partition_key,
-                                       sort_key=Environments.get_envs().dynamo_sort_key)
+        envs = Environments.get_envs()
+        self.dynamo = DynamoDatasource(
+            endpoint_url=envs.endpoint_url,
+            dynamo_table_name=envs.dynamo_table_name,
+            region=envs.region,
+            partition_key=envs.dynamo_partition_key,
+            sort_key=envs.dynamo_sort_key
+        )
     def get_user(self, user_id: str) -> User:
         resp = self.dynamo.get_item(partition_key=self.user_partition_key_format(user_id), sort_key=self.user_sort_key_format())
 
@@ -178,3 +191,36 @@ class UserRepositoryDynamo(IUserRepository):
         )
 
         return self.create_subscription(new_subscription)
+
+    def create_knowledge_base(self, user_id: str, kb: KnowledgeBase) -> KnowledgeBase:
+        kb_dto = KnowledgeBaseDynamoDTO.from_entity(kb)
+        self.dynamo.put_item(
+            partition_key=self.kb_partition_key_format(user_id),
+            sort_key=self.kb_sort_key_format(kb.id),
+            item=kb_dto.to_dynamo(),
+            is_decimal=True,
+        )
+        return kb
+
+    def get_knowledge_base(self, user_id: str, kb_id: str = None) -> List[KnowledgeBase]:
+        from boto3.dynamodb.conditions import Key
+
+        if kb_id:
+            resp = self.dynamo.get_item(
+                partition_key=self.kb_partition_key_format(user_id),
+                sort_key=self.kb_sort_key_format(kb_id)
+            )
+            item = resp.get('Item')
+            if item is None:
+                raise NoItemsFound("kb_id")
+            kb_dto = KnowledgeBaseDynamoDTO.from_dynamo(item)
+            return [kb_dto.to_entity()]
+
+        # Sem kb_id: listar todas
+        resp = self.dynamo.query(
+            key_condition_expression=Key('PK').eq(self.kb_partition_key_format(user_id)) & Key('SK').begins_with('KB#')
+        )
+        kbs: List[KnowledgeBase] = []
+        for item in resp.get('Items', []):
+            kbs.append(KnowledgeBaseDynamoDTO.from_dynamo(item).to_entity())
+        return kbs

@@ -1,22 +1,23 @@
+import os
+
 from src.modules.get_presigned_bucket_url.app.generate_presigned_bucket_url import generate_presigned_bucket_url
 from src.modules.get_presigned_bucket_url.app.types import PresignedPostResponse
+from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import (
     ConfigurationError,
     ExternalServiceError,
     InfrastructureError
 )
-import os
 
 
 class GetPresignedBucketUrlUseCase:
-    def __init__(self):
+    def __init__(self, repo: IUserRepository):
         self._validate_configuration()
+        self.repo = repo
 
     def _validate_configuration(self):
         """Valida se todas as configurações necessárias estão presentes"""
         required_env_vars = [
-            "AWS_ACCESS_KEY_ID",
-            "AWS_SECRET_ACCESS_KEY",
             "AWS_REGION_NAME"
         ]
 

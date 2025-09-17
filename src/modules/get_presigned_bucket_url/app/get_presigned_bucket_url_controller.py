@@ -61,9 +61,9 @@ class GetPresignedBucketUrlController:
 
             if type(bucket) != str:
                 raise WrongTypeParameter(
-                    fieldName="bucket",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=bucket.__class__.__name__
+                    field_name="bucket",
+                    field_type_expected="str",
+                    field_type_received=bucket.__class__.__name__
                 )
 
             if not user_id:
@@ -71,9 +71,9 @@ class GetPresignedBucketUrlController:
 
             if type(user_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="user_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=user_id.__class__.__name__
+                    field_name="user_id",
+                    field_type_expected="str",
+                    field_type_received=user_id.__class__.__name__
                 )
 
             if not kb_id:
@@ -81,23 +81,23 @@ class GetPresignedBucketUrlController:
 
             if type(kb_id) != str:
                 raise WrongTypeParameter(
-                    fieldName="kb_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=kb_id.__class__.__name__
+                    field_name="kb_id",
+                    field_type_expected="str",
+                    field_type_received=kb_id.__class__.__name__
                 )
 
             if not isinstance(expires, int):
                 raise WrongTypeParameter(
-                    fieldName="expires",
-                    fieldTypeExpected="int",
-                    fieldTypeReceived=expires.__class__.__name__
+                    field_name="expires",
+                    field_type_expected="int",
+                    field_type_received=expires.__class__.__name__
                 )
 
             if not isinstance(max_size_mb, int):
                 raise WrongTypeParameter(
-                    fieldName="max_size_mb",
-                    fieldTypeExpected="int",
-                    fieldTypeReceived=max_size_mb.__class__.__name__
+                    field_name="max_size_mb",
+                    field_type_expected="int",
+                    field_type_received=max_size_mb.__class__.__name__
                 )
 
             # Validar parâmetros na controller

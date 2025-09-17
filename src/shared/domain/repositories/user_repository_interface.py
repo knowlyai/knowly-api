@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
@@ -72,5 +73,23 @@ class IUserRepository(ABC):
     def create_subscription(self, subscription: Subscription) -> Subscription:
         """
         Creates a new subscription record for the user.
+        """
+        pass
+
+    # Knowledge Base methods
+
+    @abstractmethod
+    def create_knowledge_base(self, user_id: str, kb: KnowledgeBase) -> KnowledgeBase:
+        """
+        Creates a new knowledge base for the user.
+        """
+        pass
+
+    @abstractmethod
+    def get_knowledge_base(self, user_id: str, kb_id: str = None) -> List[KnowledgeBase]:
+        """
+        Retorna lista de KnowledgeBase do usuário.
+        - Se kb_id for fornecido: retorna lista contendo apenas a KB específica (ou lança NoItemsFound se não existir)
+        - Caso contrário: retorna todas as KBs do usuário (lista possivelmente vazia)
         """
         pass
