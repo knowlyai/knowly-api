@@ -1,5 +1,3 @@
-from .create_kb_usecase import CreateKbUseCase
-from src.modules.create_kb.app.types import CreateKbRequest
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
     DuplicatedItem,
@@ -11,6 +9,8 @@ from src.shared.helpers.errors.usecase_errors import (
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created, Conflict
 from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
+from .create_kb_usecase import CreateKbUseCase
+from .types import CreateKbRequest
 
 
 class CreateKbController:

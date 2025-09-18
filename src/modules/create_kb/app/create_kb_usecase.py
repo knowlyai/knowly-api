@@ -5,10 +5,10 @@ from datetime import datetime, timezone
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
 
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
+from src.shared.domain.enums.status_enum import Status
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.environments import Environments
-
-from src.shared.domain.enums.status_enum import Status
 from src.shared.helpers.errors.usecase_errors import (
     DuplicatedItem,
     ExternalServiceError,
@@ -16,9 +16,6 @@ from src.shared.helpers.errors.usecase_errors import (
     DatabaseError,
     ConfigurationError
 )
-from src.shared.domain.entities.knowledge_base import KnowledgeBase
-from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
-
 
 envs = Environments.get_envs()
 
