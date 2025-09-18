@@ -1,4 +1,4 @@
-from src.modules.create_kb.app.create_kb_usecase import CreateKbUseCase
+from .create_kb_usecase import CreateKbUseCase
 from src.modules.create_kb.app.types import CreateKbRequest
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
