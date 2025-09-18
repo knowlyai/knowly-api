@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
-from dotenv import load_dotenv
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.environments import Environments
@@ -20,7 +19,6 @@ from src.shared.helpers.errors.usecase_errors import (
 from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
 
-load_dotenv()
 
 envs = Environments.get_envs()
 
@@ -37,12 +35,12 @@ PK_FIELD = "id"
 
 bedrock = boto3.client(
     "bedrock-agent",
-    region_name=os.getenv("AWS_REGION_NAME")
+    region_name=envs.region
 )
 
 rds_data = boto3.client(
     "rds-data",
-    region_name=os.getenv("AWS_REGION_NAME")
+    region_name=envs.region
 )
 
 
@@ -55,8 +53,7 @@ class CreateKbUseCase:
         required_env_vars = [
             "RDS_CLUSTER_ARN",
             "RDS_SECRET_ARN",
-            "BEDROCK_ROLE_ARN",
-            "AWS_REGION_NAME"
+            "BEDROCK_ROLE_ARN"
         ]
         missing_vars = [var for var in required_env_vars if not os.environ.get(var)]
         if missing_vars:
