@@ -10,6 +10,7 @@ controller = CreateKbController(use_case)
 
 def create_kb_presenter(event):
     http_request = LambdaHttpRequest(data=event)
+    http_request.data['requester_user'] = event.get('requestContext', {}).get('authorizer', {}).get('claims', None)
     response = controller(http_request)
     http_response = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
     return http_response.toDict()
