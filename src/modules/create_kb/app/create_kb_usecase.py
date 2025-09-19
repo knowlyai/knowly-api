@@ -145,6 +145,7 @@ class CreateKbUseCase:
                 )
             if error_code == 'ForbiddenException':
                 raise DatabaseError("Permissões insuficientes para criar tabela no RDS")
+            print(e)
             raise DatabaseError(f"Erro ao criar tabela no RDS: {e.response['Error']['Message']}")
         except BotoCoreError as e:
             raise InfrastructureError(f"Erro de conectividade com RDS: {str(e)}")
