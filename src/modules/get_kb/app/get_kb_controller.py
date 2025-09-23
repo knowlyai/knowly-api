@@ -1,4 +1,4 @@
-from src.modules.get_kb.app.get_kb_usecase import GetKbUseCase
+from .get_kb_usecase import GetKbUseCase
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
