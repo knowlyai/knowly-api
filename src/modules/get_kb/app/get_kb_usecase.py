@@ -2,7 +2,6 @@ import os
 
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
-from dotenv import load_dotenv
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.environments import Environments
@@ -13,8 +12,6 @@ from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
     NoItemsFound
 )
-
-load_dotenv()
 
 envs = Environments.get_envs()
 
