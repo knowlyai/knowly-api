@@ -1,7 +1,7 @@
 import os
 
-from src.modules.get_presigned_bucket_url.app.generate_presigned_bucket_url import generate_presigned_bucket_url
-from src.modules.get_presigned_bucket_url.app.types import PresignedPostResponse
+from .generate_presigned_bucket_url import generate_presigned_bucket_url
+from .types import PresignedPostResponse
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import (
     ConfigurationError,

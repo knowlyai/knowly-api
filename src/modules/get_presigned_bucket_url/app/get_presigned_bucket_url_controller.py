@@ -1,4 +1,4 @@
-from src.modules.get_presigned_bucket_url.app.get_presigned_bucket_url_usecase import GetPresignedBucketUrlUseCase
+from .get_presigned_bucket_url_usecase import GetPresignedBucketUrlUseCase
 from src.modules.get_presigned_bucket_url.app.types import GetPresignedBucketUrlRequest
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import OK, InternalServerError, BadRequest
