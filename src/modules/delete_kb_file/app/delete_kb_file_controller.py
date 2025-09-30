@@ -1,3 +1,4 @@
+from src.shared.environments import Environments
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
@@ -56,7 +57,7 @@ class DeleteKbFileController:
                     field_type_received=type(requester_user.user_id)
                 )
 
-            bucket = request.data.get("bucket")
+            bucket = Environments.get_envs().s3_bucket_name
             user_id = request.data.get("user_id")
             kb_id = requester_user.user_id
             file_name = request.data.get("file_name")
