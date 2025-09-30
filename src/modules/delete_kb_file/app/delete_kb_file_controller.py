@@ -1,4 +1,3 @@
-from src.modules.delete_kb_file.app.delete_kb_file_usecase import DeleteKbFileUseCase
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
@@ -9,6 +8,7 @@ from src.shared.helpers.errors.usecase_errors import (
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK, NotFound
 from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
+from .delete_kb_file_usecase import DeleteKbFileUseCase
 
 
 class DeleteKbFileController:

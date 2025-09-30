@@ -1,8 +1,9 @@
-from dotenv import load_dotenv
 import os
+
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 
+from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
     InfrastructureError,
@@ -10,11 +11,11 @@ from src.shared.helpers.errors.usecase_errors import (
     NoItemsFound
 )
 
-load_dotenv()
+envs = Environments().get_envs()
 
 s3 = boto3.client(
     "s3",
-    region_name=os.getenv('AWS_REGION_NAME')
+    region_name=envs.region
 )
 
 class DeleteKbFileUseCase:
@@ -24,7 +25,7 @@ class DeleteKbFileUseCase:
     def _validate_configuration(self):
         """Valida se todas as configurações necessárias estão presentes"""
         required_env_vars = [
-            "AWS_REGION_NAME"
+            "REGION"
         ]
 
         missing_vars = []
