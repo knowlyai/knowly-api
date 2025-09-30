@@ -57,7 +57,6 @@ class Environments:
             self.dynamo_sort_key = "SK"
 
         else:
-            self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
             self.region = os.environ.get("REGION")
             self.endpoint_url = os.environ.get("ENDPOINT_URL")
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")

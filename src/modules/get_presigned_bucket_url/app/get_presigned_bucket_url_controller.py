@@ -1,3 +1,4 @@
+from src.shared.environments import Environments
 from .get_presigned_bucket_url_usecase import GetPresignedBucketUrlUseCase
 from src.modules.get_presigned_bucket_url.app.types import GetPresignedBucketUrlRequest
 from src.shared.helpers.external_interfaces.external_interface import IRequest
@@ -50,7 +51,7 @@ class GetPresignedBucketUrlController:
                     field_type_received=type(requester_user.user_id)
                 )
 
-            bucket = request.data.get("bucket")
+            bucket = Environments.get_envs().s3_bucket_name
             user_id = requester_user.user_id
             kb_id = request.data.get("kb_id")
             expires = request.data.get("expires", 900)

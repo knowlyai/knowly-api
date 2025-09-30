@@ -1,7 +1,7 @@
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 
-from src.modules.get_presigned_bucket_url.app.types import PresignedPostResponse
+from .types import PresignedPostResponse
 from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
