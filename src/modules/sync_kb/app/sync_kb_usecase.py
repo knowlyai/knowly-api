@@ -1,6 +1,6 @@
-from dotenv import load_dotenv
 import os
 import uuid
+
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 
@@ -11,11 +11,10 @@ from src.shared.helpers.errors.usecase_errors import (
     NoItemsFound
 )
 
-load_dotenv()
 
 bedrock = boto3.client(
     "bedrock-agent",
-    region_name=os.getenv('AWS_REGION_NAME')
+    region_name=os.getenv('REGION')
 )
 
 
@@ -26,7 +25,7 @@ class SyncKbUseCase:
     def _validate_configuration(self):
         """Valida se todas as configurações necessárias estão presentes"""
         required_env_vars = [
-            "AWS_REGION_NAME"
+            "REGION"
         ]
 
         missing_vars = []

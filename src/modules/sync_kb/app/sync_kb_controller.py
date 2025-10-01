@@ -1,5 +1,4 @@
-from src.modules.sync_kb.app.sync_kb_usecase import SyncKbUseCase
-from src.modules.sync_kb.app.types import SyncKbRequest
+from src.shared.environments import Environments
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
@@ -10,6 +9,8 @@ from src.shared.helpers.errors.usecase_errors import (
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK, NotFound
 from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
+from .sync_kb_usecase import SyncKbUseCase
+from .types import SyncKbRequest
 
 
 class SyncKbController:
@@ -51,7 +52,7 @@ class SyncKbController:
                     field_type_received=type(requester_user.user_id)
                 )
 
-            bucket_name = request.data.get("bucket_name")
+            bucket_name = Environments.get_envs().s3_bucket_name
             user_id = requester_user.user_id
             kb_id = request.data.get("kb_id")
 
