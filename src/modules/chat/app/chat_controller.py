@@ -1,4 +1,3 @@
-from src.modules.chat.app.chat_usecase import ChatUseCase
 from src.shared.domain.enums.models_enum import Models
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import (
@@ -10,6 +9,7 @@ from src.shared.helpers.errors.usecase_errors import (
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK, NotFound
 from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
+from .chat_usecase import ChatUseCase
 
 
 class ChatController:

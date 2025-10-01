@@ -26,7 +26,7 @@ class ChatUseCase:
     def _validate_configuration(self):
         """Valida se todas as configurações necessárias estão presentes"""
         required_env_vars = [
-            "AWS_REGION_NAME"
+            "REGION"
         ]
 
         missing_vars = []
