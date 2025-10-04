@@ -95,8 +95,12 @@ class CreateKbController:
             # Validar parâmetros na controller
             self._validate_parameters(kb_name, kb_description, kb_display_name)
 
-            kb_id = self.create_kb_usecase(kb_name.strip(), kb_description.strip(), kb_display_name.strip(), requester_user.user_id)
-            return Created(body={"kb_id": kb_id, "details": "Base de conhecimento criada com sucesso"})
+            kb_id, kb_key = self.create_kb_usecase(kb_name.strip(), kb_description.strip(), kb_display_name.strip(), requester_user.user_id)
+            return Created(body={
+                "kb_id": kb_id,
+                "kb_key": kb_key,
+                "details": "Base de conhecimento criada com sucesso"
+            })
 
         except (MissingParameters, WrongTypeParameter) as err:
             return BadRequest(body={"error": "Parâmetros inválidos", "details": err.args[0]})

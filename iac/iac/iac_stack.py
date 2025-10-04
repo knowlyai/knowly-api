@@ -60,6 +60,11 @@ class IacStack(Stack):
             "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
+            "DYNAMO_KEYS_TABLE_NAME": self.dynamo_table.keys_table.table_name,
+            "DYNAMO_KEYS_PARTITION_KEY": "PK",
+            "DYNAMO_KEYS_GSI1_NAME": "GSI1",
+            "DYNAMO_KEYS_GSI1_PARTITION_KEY": "GSI1PK",
+            "DYNAMO_KEYS_GSI1_SORT_KEY": "GSI1SK",
             "REGION": self.region,
             "AWS_REGION_NAME": self.region,
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
@@ -80,6 +85,7 @@ class IacStack(Stack):
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
+            self.dynamo_table.keys_table.grant_read_write_data(function)
 
         # --- Permissões extras somente para a função create_kb ---
         create_kb_fn = self.lambda_stack.create_kb_function

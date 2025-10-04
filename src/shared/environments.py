@@ -2,6 +2,7 @@ import os
 from enum import Enum
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.keys_repository_interface import IKeysRepository
 
 
 class STAGE(Enum):
@@ -26,6 +27,11 @@ class Environments:
     dynamo_table_name: str
     dynamo_partition_key: str
     dynamo_sort_key: str
+    dynamo_keys_table_name: str
+    dynamo_keys_partition_key: str
+    dynamo_keys_gsi1_name: str
+    dynamo_keys_gsi1_partition_key: str
+    dynamo_keys_gsi1_sort_key: str
     mss_name: str
     rds_cluster_arn: str
     rds_secret_arn: str
@@ -55,6 +61,11 @@ class Environments:
             self.dynamo_table_name = "user_mss_template-table"
             self.dynamo_partition_key = "PK"
             self.dynamo_sort_key = "SK"
+            self.dynamo_keys_table_name = "keys-table-test"
+            self.dynamo_keys_partition_key = "PK"
+            self.dynamo_keys_gsi1_name = "GSI1"
+            self.dynamo_keys_gsi1_partition_key = "GSI1PK"
+            self.dynamo_keys_gsi1_sort_key = "GSI1SK"
 
         else:
             self.region = os.environ.get("REGION")
@@ -62,6 +73,11 @@ class Environments:
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
             self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
+            self.dynamo_keys_table_name = os.environ.get("DYNAMO_KEYS_TABLE_NAME")
+            self.dynamo_keys_partition_key = os.environ.get("DYNAMO_KEYS_PARTITION_KEY")
+            self.dynamo_keys_gsi1_name = os.environ.get("DYNAMO_KEYS_GSI1_NAME")
+            self.dynamo_keys_gsi1_partition_key = os.environ.get("DYNAMO_KEYS_GSI1_PARTITION_KEY")
+            self.dynamo_keys_gsi1_sort_key = os.environ.get("DYNAMO_KEYS_GSI1_SORT_KEY")
             self.rds_cluster_arn = os.environ.get("RDS_CLUSTER_ARN")
             self.rds_secret_arn = os.environ.get("RDS_SECRET_ARN")
             self.s3_bucket_arn = os.environ.get("S3_BUCKET_ARN")
@@ -82,6 +98,16 @@ class Environments:
         else:
             raise Exception("No repository found for this stage")
 
+    @staticmethod
+    def get_keys_repo() -> IKeysRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.keys_repository_mock import KeysRepositoryMock
+            return KeysRepositoryMock()
+        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.keys_repository_dynamo import KeysRepositoryDynamo
+            return KeysRepositoryDynamo()
+        else:
+            raise Exception("No repository found for this stage")
 
     @staticmethod
     def get_envs() -> "Environments":

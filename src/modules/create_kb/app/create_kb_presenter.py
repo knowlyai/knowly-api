@@ -4,7 +4,8 @@ from .create_kb_controller import CreateKbController
 from .create_kb_usecase import CreateKbUseCase
 
 repo = Environments.get_user_repo()
-use_case = CreateKbUseCase(repo=repo)
+keys_repo = Environments.get_keys_repo()
+use_case = CreateKbUseCase(repo=repo, keys_repo=keys_repo)
 controller = CreateKbController(use_case)
 
 
