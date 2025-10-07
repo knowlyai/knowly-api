@@ -5,7 +5,8 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 
 
 repo = Environments.get_user_repo()
-use_case = GetKbUseCase(repo=repo)
+keys_repo = Environments.get_keys_repo()
+use_case = GetKbUseCase(repo=repo, keys_repo=keys_repo)
 controller = GetKbController(use_case)
 
 

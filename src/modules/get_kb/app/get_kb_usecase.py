@@ -4,6 +4,7 @@ import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.keys_repository_interface import IKeysRepository
 from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import (
     InfrastructureError,
@@ -16,8 +17,9 @@ from src.shared.helpers.errors.usecase_errors import (
 envs = Environments.get_envs()
 
 class GetKbUseCase:
-    def __init__(self, repo: IUserRepository):
+    def __init__(self, repo: IUserRepository, keys_repo: IKeysRepository):
         self.repo = repo
+        self.keys_repo = keys_repo
         self._validate_configuration()
         self.s3 = boto3.client(
             "s3",
@@ -40,6 +42,22 @@ class GetKbUseCase:
             formatted = []
             for kb in kbs:
                 files, total_size_mb = self._get_kb_files_and_size(user_id, kb.id)
+
+                # Buscar chaves da KB
+                kb_keys = []
+                try:
+                    keys = self.keys_repo.get_kb_keys(user_id=user_id, kb_id=kb.id)
+                    kb_keys = [
+                        {
+                            "kb_key": key.kb_key,
+                            "kb_key_alias": key.kb_key_alias
+                        }
+                        for key in keys
+                    ]
+                except:  # noqa
+                    # Se houver erro ao buscar chaves, retorna lista vazia
+                    kb_keys = []
+
                 formatted.append({
                     "kb_id": kb.id,
                     "name": kb.name,
@@ -50,7 +68,8 @@ class GetKbUseCase:
                     "updated_at": kb.updated_at,
                     "status": kb.status,
                     "files": files,
-                    "total_size_mb": total_size_mb
+                    "total_size_mb": total_size_mb,
+                    "keys": kb_keys
                 })
 
             return {"knowledge_bases": formatted}
