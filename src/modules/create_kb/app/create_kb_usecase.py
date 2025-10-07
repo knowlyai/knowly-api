@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime, timezone
+import time
 
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
@@ -109,13 +109,13 @@ class CreateKbUseCase:
             raise
 
     def _persist_kb(self, user_id: str, kb_id: str, kb_name: str, kb_description: str, kb_display_name: str, rds_table: str):
-        now_iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+        current_time = int(time.time())
         kb_entity = KnowledgeBase(
             id=kb_id,
             name=kb_name,
             description=kb_description or "",
-            created_at=now_iso,
-            updated_at=now_iso,
+            created_at=current_time,
+            updated_at=current_time,
             status=Status.ACTIVE.value,
             documents_count=0,
             categories=[],
