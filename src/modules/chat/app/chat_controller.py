@@ -60,6 +60,14 @@ class ChatController:
                 )
             if not model:
                 raise MissingParameters('model')
+
+            # Converter string para enum Models
+            if type(model) == str:
+                try:
+                    model = Models[model]
+                except KeyError:
+                    raise ValueError(f"Modelo '{model}' não é válido. Modelos disponíveis: {', '.join([m.name for m in Models])}")
+
             if type(model) != Models:
                 raise WrongTypeParameter(
                     field_name="model",
