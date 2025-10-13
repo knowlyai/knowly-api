@@ -7,6 +7,7 @@ import pytest
 from src.shared.domain.entities.subscription import Subscription
 from src.shared.domain.entities.transaction import Transaction
 from src.shared.domain.entities.user import User
+from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -324,3 +325,48 @@ class TestUserRepositoryDynamo:
                 user_id="nonexistent-user-id",
                 new_plan=PlanEnum.SI
             )
+
+    @pytest.mark.skip(reason="Needs dynamoDB")
+    def test_create_knowledge_base(self):
+        os.environ["STAGE"] = "TEST"
+
+        repo = UserRepositoryDynamo()
+        kb = KnowledgeBase(
+            id="A1b2C3d4E5",
+            name="KB_Teste",
+            description="KB Dynamo teste",
+            created_at="2025-03-10T00:00:00Z",
+            updated_at="2025-03-10T00:00:00Z",
+            status="ACTIVE",
+            documents_count=0,
+            categories=["geral"],
+            display_name="KB Teste",
+            rds_table="embedding_A1b2C3d4E5",
+        )
+
+        created = repo.create_knowledge_base(
+            user_id="fdddafb9-687a-4982-a025-54fb12671932",
+            kb=kb,
+        )
+
+        assert created == kb
+
+    @pytest.mark.skip(reason="Needs dynamoDB")
+    def test_get_knowledge_base_all(self):
+        os.environ["STAGE"] = "TEST"
+        repo = UserRepositoryDynamo()
+
+        kbs = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932")
+        assert len(kbs) == 4
+
+    @pytest.mark.skip(reason="Needs dynamoDB")
+    def test_get_knowledge_base_specific(self):
+        os.environ["STAGE"] = "TEST"
+        repo = UserRepositoryDynamo()
+
+
+        resultado = repo.get_knowledge_base(user_id="fdddafb9-687a-4982-a025-54fb12671932", kb_id="A1B2C3D4E5")
+        assert len(resultado) == 1
+        assert resultado[0].id == "A1B2C3D4E5"
+        assert resultado[0].name == "KB_Principal"
+

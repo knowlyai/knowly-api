@@ -10,8 +10,12 @@ class TestGetUserController:
         usecase = GetUserUseCase(repo=repo)
         controller = GetUserController(usecase=usecase)
 
-        request = HttpRequest(query_params={
-            'user_id': str(repo.users[0].user_id)
+        request = HttpRequest(body={
+            "requester_user": {
+                "sub": repo.users[0].user_id,
+                "name": repo.users[0].name,
+                "email": repo.users[0].email
+            }
         })
 
         response = controller(request=request)
@@ -40,7 +44,7 @@ class TestGetUserController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'O campo user_id está faltando'
+        assert response.body == 'O campo requester_user está faltando'
 
     def test_get_user_controller_wrong_type_parameter(self):
         repo = UserRepositoryMock()
@@ -48,7 +52,11 @@ class TestGetUserController:
         controller = GetUserController(usecase=usecase)
 
         request = HttpRequest(query_params={
-            'user_id': 999
+            "requester_user": {
+                "sub": 999,
+                "name": repo.users[0].name,
+                "email": repo.users[0].email
+            }
         })
 
         response = controller(request=request)
@@ -62,7 +70,11 @@ class TestGetUserController:
         controller = GetUserController(usecase=usecase)
 
         request = HttpRequest(query_params={
-            'user_id': 'abc'
+            "requester_user": {
+                "sub": 'abc',
+                "name": repo.users[0].name,
+                "email": repo.users[0].email
+            }
         })
 
         response = controller(request=request)
@@ -76,7 +88,11 @@ class TestGetUserController:
         controller = GetUserController(usecase=usecase)
 
         request = HttpRequest(query_params={
-            'user_id': str("46ad137d-296e-4583-af8b-13a901d24036")
+            "requester_user": {
+                "sub": "46ad137d-296e-4583-af8b-13a901d24036",
+                "name": repo.users[0].name,
+                "email": repo.users[0].email
+            }
         })
 
         response = controller(request=request)

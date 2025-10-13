@@ -3,7 +3,7 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 from .create_user_controller import CreateUserController
 from .create_user_usecase import CreateUserUseCase
 
-repo = Environments.get_user_repo()()
+repo = Environments.get_user_repo()
 usecase = CreateUserUseCase(repo)
 controller = CreateUserController(usecase)
 
@@ -14,4 +14,3 @@ def lambda_handler(event, context):
     http_response = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
 
     return http_response.toDict()
-
