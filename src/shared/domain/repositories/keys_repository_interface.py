@@ -29,3 +29,11 @@ class IKeysRepository(ABC):
         If key not found raise NoItemsFound
         """
         pass
+
+    @abstractmethod
+    def get_kb_id_by_key(self, kb_key: str) -> str:
+        """
+        Retorna o kb_id associado à chave de API fornecida.
+        Se a chave não for encontrada, levanta NoItemsFound.
+        """
+        pass

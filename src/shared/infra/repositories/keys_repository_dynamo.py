@@ -93,3 +93,15 @@ class KeysRepositoryDynamo(IKeysRepository):
             raise NoItemsFound("kb_key")
 
         return KbKeyDynamoDTO.from_dynamo(delete_resp['Attributes']).to_entity()
+
+    def get_kb_id_by_key(self, kb_key: str) -> str:
+        resp = self.dynamo.get_item(
+            partition_key=self.key_partition_key_format(kb_key)
+        )
+
+        item = resp.get('Item')
+        if item is None:
+            raise NoItemsFound("kb_key")
+
+        kb_key_dto = KbKeyDynamoDTO.from_dynamo(item)
+        return kb_key_dto.kb_id
