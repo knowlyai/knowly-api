@@ -2,14 +2,14 @@ from aws_cdk import (
     aws_lambda as lambda_,
     Duration
 )
-from aws_cdk.aws_apigateway import Resource, LambdaIntegration, AuthorizationType, CognitoUserPoolsAuthorizer
+from aws_cdk.aws_apigateway import Resource, LambdaIntegration, AuthorizationType, CognitoUserPoolsAuthorizer, RestApi
 from constructs import Construct
 
 
 class LambdaStack(Construct):
     functions_that_need_dynamo_permissions = []
 
-    def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict, user_pool) -> None:
+    def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict, user_pool, chat_api: RestApi = None) -> None:
         super().__init__(scope, "KnowlyApiLambdas")
 
         # Authorizer Cognito (User Pool)
@@ -147,20 +147,48 @@ class LambdaStack(Construct):
             requires_authorizer=True
         )
 
-        # ---- Chat Resource ----
-        chat_resource = api_gateway_resource.add_resource("chat")
-        self.chat_function = self._add_method_to_resource(
-            module_name="chat",
-            http_method="POST",
-            target_resource=chat_resource,
-            environment_variables=environment_variables,
-            requires_authorizer=True
-        )
+        # ---- Chat Resource foi movido para API Gateway separado ----
+
+        # ---- Chat Function no API Gateway separado (se fornecido) ----
+        if chat_api:
+            self.chat_function = self._create_chat_function(
+                chat_api=chat_api,
+                environment_variables=environment_variables
+            )
+        else:
+            self.chat_function = None
 
         self.functions_that_need_dynamo_permissions = [self.get_user_function, self.create_user_function,
                                                 self.delete_user_function, self.update_user_function,
                                                 self.get_transactions_by_user_function, self.get_subscriptions_by_user_function,
                                                 self.update_subscription_function, self.create_kb_function, self.get_kb_function]
+
+    def _create_chat_function(self, chat_api: RestApi, environment_variables: dict) -> lambda_.Function:
+        """Cria a função chat e adiciona ao API Gateway separado"""
+        fn = lambda_.Function(
+            self,
+            "ChatFunction",
+            code=lambda_.Code.from_asset("../src/modules/chat"),
+            handler="app.chat_presenter.lambda_handler",
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            layers=[self.lambda_layer],
+            environment=environment_variables,
+            timeout=Duration.seconds(15),
+        )
+
+        # Adiciona o recurso /chat no API Gateway separado
+        from aws_cdk.aws_apigateway import Cors
+        chat_resource = chat_api.root.add_resource("chat", default_cors_preflight_options=
+        {
+            "allow_origins": Cors.ALL_ORIGINS,
+            "allow_methods": ["POST", "OPTIONS"],
+            "allow_headers": Cors.DEFAULT_HEADERS
+        })
+
+        chat_integration = LambdaIntegration(fn)
+        chat_resource.add_method("POST", chat_integration)
+
+        return fn
 
     def _add_method_to_resource(
             self,
