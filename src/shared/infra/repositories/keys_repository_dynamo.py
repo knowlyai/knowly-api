@@ -62,7 +62,7 @@ class KeysRepositoryDynamo(IKeysRepository):
 
         resp = self.dynamo.query(
             key_condition_expression=key_condition,
-            index_name=self.gsi1_name
+            IndexName=self.gsi1_name
         )
 
         kb_keys: List[KbKey] = []
