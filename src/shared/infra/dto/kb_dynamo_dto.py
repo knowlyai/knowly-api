@@ -87,7 +87,7 @@ class KnowledgeBaseDynamoDTO:
             created_at=item["created_at"],
             updated_at=item["updated_at"],
             status=item["status"],
-            documents_count=int(item["documents_count"]),
+            documents_count=int(item["documents_count"]) if item.get("documents_count") else 0,
             categories=list(item.get("categories", [])),
             display_name=item.get("display_name", item.get("name", "")),
             rds_table=item.get("rds_table", ""),
