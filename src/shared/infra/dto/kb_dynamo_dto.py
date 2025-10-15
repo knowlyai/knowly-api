@@ -104,7 +104,7 @@ class KnowledgeBaseDynamoDTO:
             created_at=self.created_at,
             updated_at=self.updated_at,
             status=self.status,
-            documents_count=self.documents_count,
+            documents_count=int(str(self.documents_count)),
             categories=self.categories,
             display_name=self.display_name,
             rds_table=self.rds_table,
