@@ -69,6 +69,7 @@ class KeysRepositoryDynamo(IKeysRepository):
         for item in resp.get('Items', []):
             kb_key_dto = KbKeyDynamoDTO.from_dynamo(item)
             kb_keys.append(kb_key_dto.to_entity())
+            print(kb_keys[-1].kb_key)
 
         return kb_keys
 

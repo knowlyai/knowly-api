@@ -57,7 +57,7 @@ class GetKbUseCase:
                 except:  # noqa
                     # Se houver erro ao buscar chaves, retorna lista vazia
                     kb_keys = []
-
+                print(kb_keys)
                 formatted.append({
                     "kb_id": kb.id,
                     "name": kb.name,
