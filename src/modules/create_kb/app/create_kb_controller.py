@@ -4,10 +4,11 @@ from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
     InfrastructureError,
     DatabaseError,
-    ConfigurationError
+    ConfigurationError,
+    PlanQuotaExceeded
 )
 from src.shared.helpers.external_interfaces.external_interface import IRequest
-from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created, Conflict
+from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, Created, Conflict, Forbidden
 from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
 from .create_kb_usecase import CreateKbUseCase
 from .types import CreateKbRequest
@@ -107,6 +108,9 @@ class CreateKbController:
 
         except ValueError as err:
             return BadRequest(body={"error": "Dados inválidos", "details": str(err)})
+
+        except PlanQuotaExceeded as err:
+            return Forbidden(body={"error": "Limite do plano excedido", "details": err.message})
 
         except DuplicatedItem as err:
             return Conflict(body={"error": "Recurso já existe", "details": err.message})
