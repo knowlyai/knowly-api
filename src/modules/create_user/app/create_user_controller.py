@@ -64,14 +64,6 @@ class CreateUserController:
                     raise WrongTypeParameter('birthdate', 'int', f"{type(request.data.get('birthdate'))}")
                 birthdate = request.data.get('birthdate')
 
-            if request.data.get('plan') is not None:
-                plan_str = request.data.get('plan')
-                if plan_str not in [plan.value for plan in PlanEnum]:
-                    raise EnumError('plan', 'PlanEnum')
-                plan = PlanEnum(plan_str)
-            else:
-                raise MissingParameters('plan')
-
             user = self.CreateUserUseCase(
                 name=request.data.get('name'),
                 email=request.data.get('email'),
@@ -81,8 +73,7 @@ class CreateUserController:
                 cpf_cnpj=request.data.get('cpf_cnpj'),
                 address=request.data.get('address'),
                 cep=request.data.get('cep'),
-                birthdate=request.data.get('birthdate', None),
-                plan=plan
+                birthdate=request.data.get('birthdate', None)
             )
 
             viewmodel = {
