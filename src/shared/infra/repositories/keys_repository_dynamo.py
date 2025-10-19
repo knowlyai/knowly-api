@@ -62,13 +62,14 @@ class KeysRepositoryDynamo(IKeysRepository):
 
         resp = self.dynamo.query(
             key_condition_expression=key_condition,
-            index_name=self.gsi1_name
+            IndexName=self.gsi1_name
         )
 
         kb_keys: List[KbKey] = []
         for item in resp.get('Items', []):
             kb_key_dto = KbKeyDynamoDTO.from_dynamo(item)
             kb_keys.append(kb_key_dto.to_entity())
+            print(kb_keys[-1].kb_key)
 
         return kb_keys
 
@@ -93,3 +94,15 @@ class KeysRepositoryDynamo(IKeysRepository):
             raise NoItemsFound("kb_key")
 
         return KbKeyDynamoDTO.from_dynamo(delete_resp['Attributes']).to_entity()
+
+    def get_kb_id_by_key(self, kb_key: str) -> str:
+        resp = self.dynamo.get_item(
+            partition_key=self.key_partition_key_format(kb_key)
+        )
+
+        item = resp.get('Item')
+        if item is None:
+            raise NoItemsFound("kb_key")
+
+        kb_key_dto = KbKeyDynamoDTO.from_dynamo(item)
+        return kb_key_dto.kb_id

@@ -2,9 +2,10 @@ import os
 
 from aws_cdk import (
     Stack,
-    # aws_sqs as sqs,
+    aws_lambda as lambda_,
+    Duration,
 )
-from aws_cdk.aws_apigateway import RestApi, Cors
+from aws_cdk.aws_apigateway import RestApi, Cors, LambdaIntegration
 from constructs import Construct
 from aws_cdk import aws_iam as iam
 
@@ -24,6 +25,7 @@ class IacStack(Stack):
         self.aws_region = os.environ.get("AWS_REGION")
         stage = self.github_ref_name
 
+        # API Gateway principal
         self.rest_api = RestApi(self, "KnowlyRestApi",
                                 rest_api_name="KnowlyRestApi",
                                 description=f"This is the Knowly RestApi for {self.github_ref_name}",
@@ -42,6 +44,18 @@ class IacStack(Stack):
             "allow_headers": Cors.DEFAULT_HEADERS
         }
                                                                )
+
+        # API Gateway separado para Chat (público)
+        self.chat_api = RestApi(self, "KnowlyChatApi",
+                                rest_api_name="KnowlyChatApi",
+                                description=f"This is the Knowly Chat Public API for {self.github_ref_name}",
+                                default_cors_preflight_options=
+                                {
+                                    "allow_origins": Cors.ALL_ORIGINS,
+                                    "allow_methods": ["POST", "OPTIONS"],
+                                    "allow_headers": ["*"]
+                                },
+                                )
 
         self.dynamo_table = DynamoStack(self)
 
@@ -81,11 +95,16 @@ class IacStack(Stack):
 
         self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
                                         environment_variables=ENVIRONMENT_VARIABLES,
-                                        user_pool=self.cognito_stack.user_pool)
+                                        user_pool=self.cognito_stack.user_pool,
+                                        chat_api=self.chat_api)
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
             self.dynamo_table.keys_table.grant_read_write_data(function)
+
+        # Permissões DynamoDB para a função chat (acesso à tabela de keys)
+        if self.lambda_stack.chat_function:
+            self.dynamo_table.keys_table.grant_read_write_data(self.lambda_stack.chat_function)
 
         # --- Permissões extras somente para a função create_kb ---
         create_kb_fn = self.lambda_stack.create_kb_function
@@ -158,12 +177,12 @@ class IacStack(Stack):
         ))
 
         # --- Permissões Bedrock Runtime para chat ---
-        chat_fn = self.lambda_stack.chat_function
-        chat_fn.add_to_role_policy(iam.PolicyStatement(
-            actions=[
-                "bedrock:RetrieveAndGenerate",
-                "bedrock:Retrieve",
-                "bedrock:InvokeModel"
-            ],
-            resources=["*"]
-        ))
+        if self.lambda_stack.chat_function:
+            self.lambda_stack.chat_function.add_to_role_policy(iam.PolicyStatement(
+                actions=[
+                    "bedrock:RetrieveAndGenerate",
+                    "bedrock:Retrieve",
+                    "bedrock:InvokeModel"
+                ],
+                resources=["*"]
+            ))

@@ -45,19 +45,18 @@ class GetKbUseCase:
 
                 # Buscar chaves da KB
                 kb_keys = []
-                try:
-                    keys = self.keys_repo.get_kb_keys(user_id=user_id, kb_id=kb.id)
-                    kb_keys = [
-                        {
-                            "kb_key": key.kb_key,
-                            "kb_key_alias": key.kb_key_alias
-                        }
-                        for key in keys
-                    ]
-                except:  # noqa
-                    # Se houver erro ao buscar chaves, retorna lista vazia
-                    kb_keys = []
+                keys = self.keys_repo.get_kb_keys(user_id=user_id, kb_id=kb.id)
+                kb_keys = [
+                    {
+                        "kb_key": key.kb_key,
+                        "kb_key_alias": key.kb_key_alias
+                    }
+                    for key in keys
+                ]
 
+                if kb_keys is None:
+                    kb_keys = []
+                print(kb_keys)
                 formatted.append({
                     "kb_id": kb.id,
                     "name": kb.name,

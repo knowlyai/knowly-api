@@ -11,7 +11,6 @@ from src.shared.domain.enums.ptype_enum import PTypeEnum
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import MinorAgeError, UserAlreadyExists
 
-
 class CreateUserUseCase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
@@ -20,7 +19,7 @@ class CreateUserUseCase:
         self.region = "us-east-1"
         self.cognito = boto3.client("cognito-idp", region_name=self.region)
 
-    def __call__(self, name: str, email: str, password: str, cellphone: str, p_type: PTypeEnum, cpf_cnpj: str, address: str, cep: str, birthdate: Optional[int], plan: PlanEnum) -> User:
+    def __call__(self, name: str, email: str, password: str, cellphone: str, p_type: PTypeEnum, cpf_cnpj: str, address: str, cep: str, birthdate: Optional[int]) -> User:
 
         current_time = int(time.time())
 
@@ -63,7 +62,7 @@ class CreateUserUseCase:
             address=address,
             cep=cep,
             birthdate=birthdate,
-            plan=plan,
+            plan=PlanEnum.BR,
             creation_date=creation_date,
             update_date=update_date,
         )

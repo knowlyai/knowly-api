@@ -7,6 +7,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 
 from src.shared.domain.entities.knowledge_base import KnowledgeBase
 from src.shared.domain.entities.kb_key import KbKey
+from src.shared.domain.enums.plan_enum import PlanEnum
 from src.shared.domain.enums.status_enum import Status
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.domain.repositories.keys_repository_interface import IKeysRepository
@@ -16,7 +17,7 @@ from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
     InfrastructureError,
     DatabaseError,
-    ConfigurationError
+    ConfigurationError, PlanQuotaExceeded
 )
 
 envs = Environments.get_envs()
@@ -76,6 +77,18 @@ class CreateKbUseCase:
         gin_idx = f"{safe_suffix}_chunks_gin_idx"
         hnsw_idx = f"{safe_suffix}_embedding_hnsw_idx"
         kb_id = None
+
+        user = self.user_repository.get_user(user_id=user_id)
+        kb_count = self.user_repository.get_knowledge_base(user_id=user_id)
+
+        # Validação de quota por plano
+        if user.plan == PlanEnum.BR and len(kb_count) >= 1:
+            raise PlanQuotaExceeded('Plano Bronze permite no máximo 1 knowledge base')
+
+        if user.plan == PlanEnum.SI and len(kb_count) >= 3:
+            raise PlanQuotaExceeded('Plano Silver permite no máximo 3 knowledge bases')
+
+        # Plano Gold (GO) não tem limite
 
         try:
             self._create_rds_table(table_name, gin_idx, hnsw_idx)

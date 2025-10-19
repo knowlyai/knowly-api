@@ -57,3 +57,9 @@ class KeysRepositoryMock(IKeysRepository):
             if key.user_id == user_id and key.kb_key == kb_key:
                 return self.kb_keys.pop(idx)
         raise NoItemsFound("kb_key")
+
+    def get_kb_id_by_key(self, kb_key: str) -> str:
+        for key in self.kb_keys:
+            if key.kb_key == kb_key:
+                return key.kb_id
+        raise NoItemsFound("kb_key")

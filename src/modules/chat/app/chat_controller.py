@@ -8,7 +8,6 @@ from src.shared.helpers.errors.usecase_errors import (
 )
 from src.shared.helpers.external_interfaces.external_interface import IRequest
 from src.shared.helpers.external_interfaces.http_codes import InternalServerError, BadRequest, OK, NotFound
-from src.shared.infra.dto.user_api_gateway_dto import UserApiGatewayDTO
 from .chat_usecase import ChatUseCase
 
 
@@ -16,47 +15,34 @@ class ChatController:
     def __init__(self, chat_usecase: ChatUseCase):
         self.chat_usecase = chat_usecase
 
-    def _validate_parameters(self, kb_id: str, prompt: str, top_k: int):
+    def _validate_parameters(self, kb_key: str, prompt: str, top_k: int):
         """Valida os parâmetros de entrada na controller"""
-        if not kb_id or not kb_id.strip():
-            raise ValueError("ID da base de conhecimento é obrigatório")
+        if not kb_key or not kb_key.strip():
+            raise ValueError("kb_key é obrigatória")
 
         if not prompt or not prompt.strip():
             raise ValueError("Prompt é obrigatório")
 
-        if len(kb_id.strip()) < 1:
-            raise ValueError("ID da base de conhecimento não pode estar vazio")
+        if len(kb_key.strip()) < 1:
+            raise ValueError("kb_key não pode estar vazia")
 
         if len(prompt.strip()) < 1:
             raise ValueError("Prompt não pode estar vazio")
 
     def __call__(self, request: IRequest):
         try:
-            # Authorizer obrigatório
-            if request.data.get('requester_user') is None:
-                raise MissingParameters('requester_user')
-
-            requester_user = UserApiGatewayDTO.from_api_gateway(request.data.get('requester_user'))
-
-            if type(requester_user.user_id) != str:
-                raise WrongTypeParameter(
-                    field_name='user_id',
-                    field_type_expected='str',
-                    field_type_received=type(requester_user.user_id)
-                )
-
-            kb_id = request.data.get("kb_id")
+            kb_key = request.data.get("kb_key")
             model = request.data.get("model")
             prompt = request.data.get("prompt")
             top_k = request.data.get("top_k", 5)
 
-            if not kb_id:
-                raise MissingParameters('kb_id')
-            if type(kb_id) != str:
+            if not kb_key:
+                raise MissingParameters('kb_key')
+            if type(kb_key) != str:
                 raise WrongTypeParameter(
-                    field_name="kb_id",
+                    field_name="kb_key",
                     field_type_expected="str",
-                    field_type_received=kb_id.__class__.__name__
+                    field_type_received=kb_key.__class__.__name__
                 )
             if not model:
                 raise MissingParameters('model')
@@ -90,10 +76,10 @@ class ChatController:
                 )
 
             # Validar parâmetros na controller
-            self._validate_parameters(kb_id, prompt, top_k)
+            self._validate_parameters(kb_key, prompt, top_k)
 
             result = self.chat_usecase(
-                kb_id=kb_id.strip(),
+                kb_key=kb_key.strip(),
                 model=model.value,
                 prompt=prompt.strip(),
                 top_k=top_k

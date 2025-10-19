@@ -35,3 +35,7 @@ class ConfigurationError(BaseError):
 class UserAlreadyExists(BaseError):
     def __init__(self, message: str):
         super().__init__(f'Usuário já existe: {message}')
+
+class PlanQuotaExceeded(BaseError):
+    def __init__(self, message: str):
+        super().__init__(f'Limite do plano excedido: {message}')

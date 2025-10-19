@@ -3,6 +3,7 @@ import os
 import boto3
 from botocore.exceptions import ClientError, NoCredentialsError, BotoCoreError
 
+from src.shared.domain.repositories.keys_repository_interface import IKeysRepository
 from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import (
     ExternalServiceError,
@@ -20,7 +21,8 @@ bedrock = boto3.client(
 
 
 class ChatUseCase:
-    def __init__(self):
+    def __init__(self, keys_repository: IKeysRepository):
+        self.keys_repository = keys_repository
         self._validate_configuration()
 
     def _validate_configuration(self):
@@ -37,8 +39,11 @@ class ChatUseCase:
         if missing_vars:
             raise ConfigurationError(f"Variáveis de ambiente obrigatórias não encontradas: {', '.join(missing_vars)}")
 
-    def _validate_parameters(self, kb_id: str, model: str, prompt: str, top_k: int):
+    def _validate_parameters(self, kb_key: str, model: str, prompt: str, top_k: int):
         """Valida os parâmetros de entrada"""
+        if not kb_key or len(kb_key.strip()) == 0:
+            raise ValueError("kb_key é obrigatória")
+
         if top_k <= 0:
             raise ValueError("Número de resultados (top_k) deve ser maior que zero")
 
@@ -51,11 +56,15 @@ class ChatUseCase:
         if len(prompt.strip()) > 10000:
             raise ValueError("Prompt não pode ter mais que 10.000 caracteres")
 
-    def __call__(self, kb_id: str, model: str, prompt: str, top_k: int = 5) -> dict:
+    def __call__(self, kb_key: str, model: str, prompt: str, top_k: int = 5) -> dict:
         """Executa o chat com a base de conhecimento"""
+        kb_id = None  # Inicializa para evitar referência antes de atribuição
         try:
             # Validar parâmetros
-            self._validate_parameters(kb_id, model, prompt, top_k)
+            self._validate_parameters(kb_key, model, prompt, top_k)
+
+            # Buscar kb_id pela kb_key
+            kb_id = self.keys_repository.get_kb_id_by_key(kb_key)
 
             model_arn = f"arn:aws:bedrock:us-east-1::foundation-model/{model}"
             extra_prompt = """
