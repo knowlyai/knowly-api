@@ -67,7 +67,7 @@ class IacStack(Stack):
 
         custom_message_function = lambda_.Function(
             self, "CustomMessageFunction",
-            code=lambda_.Code.from_asset("iac/iac"),
+            code=lambda_.Code.from_asset("iac"),
             memory_size=128,
             handler="send_email.lambda_handler",
             runtime=lambda_.Runtime.PYTHON_3_13,
