@@ -62,9 +62,11 @@ class DynamoDatasource:
         @return: dict with the response from DynamoDB
         """
 
-        resp = self.dynamo_table.get_item(
-            Key={self.partition_key: partition_key, self.sort_key: sort_key if sort_key else None}
-        )
+        key = {self.partition_key: partition_key}
+        if sort_key and self.sort_key:
+            key[self.sort_key] = sort_key
+
+        resp = self.dynamo_table.get_item(Key=key)
         return resp
 
     def hard_update_item(self, partition_key: str, sort_key: str, item: dict):
