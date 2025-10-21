@@ -68,6 +68,15 @@ class LambdaStack(Construct):
             environment_variables=environment_variables
         )
 
+        # Sub-recurso para refresh token
+        auth_refresh_resource = auth_resource.add_resource("refresh")
+        self.refresh_token_function = self._add_method_to_resource(
+            module_name="refresh_token",
+            http_method="POST",
+            target_resource=auth_refresh_resource,
+            environment_variables=environment_variables
+        )
+
         # ---- Transactions Resource ----
         transactions_resource = api_gateway_resource.add_resource("transactions")
 
