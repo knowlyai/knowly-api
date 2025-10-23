@@ -3,7 +3,7 @@ import os
 from aws_cdk import (
     Stack,
     aws_lambda as lambda_,
-    Duration,
+    Duration, aws_cognito,
 )
 from aws_cdk.aws_apigateway import RestApi, Cors, LambdaIntegration
 from constructs import Construct
@@ -64,6 +64,20 @@ class IacStack(Stack):
         self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
 
         self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}', env=kwargs.get('env'))
+
+        custom_message_function = lambda_.Function(
+            self, "CustomMessageFunction",
+            code=lambda_.Code.from_asset("iac"),
+            memory_size=128,
+            handler="send_email.lambda_handler",
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            timeout=Duration.seconds(15),
+        )
+
+        self.cognito_stack.user_pool.add_trigger(
+            aws_cognito.UserPoolOperation.CUSTOM_MESSAGE,
+            custom_message_function
+        )
 
         # Recupera variáveis opcionais para Bedrock / embedding
         bedrock_role_arn = os.environ.get("BEDROCK_ROLE_ARN")
