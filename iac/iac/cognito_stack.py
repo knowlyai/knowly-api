@@ -1,7 +1,7 @@
 import os
 
 from aws_cdk import (
-    aws_cognito, RemovalPolicy
+    aws_cognito, RemovalPolicy, Duration
 )
 from constructs import Construct
 
@@ -63,6 +63,9 @@ class CognitoStack(Construct):
                 user_srp=True,
             ),
             generate_secret=False,
+            access_token_validity=Duration.hours(1),
+            id_token_validity=Duration.hours(1),
+            refresh_token_validity=Duration.days(7),
         )
 
 #redeploy
