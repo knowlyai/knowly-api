@@ -53,7 +53,7 @@ class IacStack(Stack):
                                 {
                                     "allow_origins": Cors.ALL_ORIGINS,
                                     "allow_methods": ["POST", "OPTIONS"],
-                                    "allow_headers": ["*"]
+                                    "allow_headers": Cors.DEFAULT_HEADERS
                                 },
                                 )
 
