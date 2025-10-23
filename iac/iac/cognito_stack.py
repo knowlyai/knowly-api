@@ -6,8 +6,8 @@ from aws_cdk import (
 from constructs import Construct
 
 SES_REGION = "us-east-1"
-FROM_EMAIL = "no-reply@knowly.dev.br"
-FROM_NAME  = "Knowly"
+FROM_EMAIL = "knowly.dev.br"
+FROM_NAME  = "no-reply@knowly.dev.br"
 
 class CognitoStack(Construct):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
