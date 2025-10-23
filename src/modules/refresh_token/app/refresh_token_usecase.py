@@ -18,7 +18,6 @@ class RefreshTokenUseCase:
                     "REFRESH_TOKEN": refresh_token
                 }
             )
-            self.cognito.get_tokens_from_refresh_token()
 
             if "AuthenticationResult" in response and response["AuthenticationResult"] is not None:
                 result = response["AuthenticationResult"]
