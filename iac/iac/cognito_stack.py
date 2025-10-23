@@ -63,3 +63,5 @@ class CognitoStack(Construct):
             ),
             generate_secret=False,
         )
+
+#redeploy
