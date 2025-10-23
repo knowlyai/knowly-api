@@ -5,7 +5,7 @@ import pytest
 from src.modules.get_user.app.get_user_presenter import lambda_handler
 
 
-class Test_GetUserPresenter:
+class TestGetUserPresenter:
 
     def test_get_user(self):
         event = {
@@ -22,21 +22,18 @@ class Test_GetUserPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "user_id": "1"
+                "parameter1": ["value1", "value2"],
+                "parameter2": "value"
             },
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
+                    "claims": {
+                        "sub": "fdddafb9-687a-4982-a025-54fb12671932",
+                        "name": "Enzo Sakamoto",
+                        "email": "a@a"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -62,7 +59,17 @@ class Test_GetUserPresenter:
 
         response = lambda_handler(event, None)
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])["name"] == "Bruno Soller"
-        assert json.loads(response["body"])["email"] == "soller@soller.com"
-        assert json.loads(response["body"])["state"] == "APPROVED"
-        assert json.loads(response["body"])["user_id"] == 1
+        assert json.loads(response["body"])['user']["name"] == "Enzo Sakamoto"
+        assert json.loads(response["body"])['user']["email"] == "saka@moto.com"
+        assert json.loads(response["body"])['user']["cellphone"] == "11 95320-2088"
+        assert json.loads(response["body"])['user']["p_type"] == "PF"
+        assert json.loads(response["body"])['user']["cpf_cnpj"] == "37973280871"
+        assert json.loads(response["body"])['user']["address"] == "Rua das Flores, 123"
+        assert json.loads(response["body"])['user']["cep"] == "04111111"
+        assert json.loads(response["body"])['user']["plan"] == "Gold"
+        assert json.loads(response["body"])['user']["creation_date"] == 1749079322
+        assert json.loads(response["body"])['user']["update_date"] == 1749079323
+        assert json.loads(response["body"])['user']["birthdate"] == 1022368922
+        assert json.loads(response["body"])['user']["user_id"] == "fdddafb9-687a-4982-a025-54fb12671932"
+        assert json.loads(response["body"])['message'] == "Usuário encontrado com sucesso"
+

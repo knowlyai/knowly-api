@@ -1,6 +1,18 @@
 import json
+from decimal import Decimal
 
 from src.shared.helpers.external_interfaces.http_models import HttpRequest, HttpResponse
+
+
+class DecimalEncoder(json.JSONEncoder):
+    """Custom JSON encoder that converts Decimal to int or float"""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            # Convert to int if it's a whole number, otherwise to float
+            if obj % 1 == 0:
+                return int(obj)
+            return float(obj)
+        return super(DecimalEncoder, self).default(obj)
 
 
 class LambdaHttpResponse(HttpResponse):
@@ -45,7 +57,7 @@ class LambdaHttpResponse(HttpResponse):
         """
         return {
             "statusCode": self.status_code,
-            "body": json.dumps(self.body),
+            "body": json.dumps(self.body, ensure_ascii=False, cls=DecimalEncoder),
             "headers": self.headers,
             "isBase64Encoded": False
         }

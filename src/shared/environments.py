@@ -1,9 +1,8 @@
-import enum
-from enum import Enum
 import os
-from src.shared.domain.observability.observability_interface import IObservability
+from enum import Enum
 
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.keys_repository_interface import IKeysRepository
 
 
 class STAGE(Enum):
@@ -28,8 +27,18 @@ class Environments:
     dynamo_table_name: str
     dynamo_partition_key: str
     dynamo_sort_key: str
-    cloud_frontget_user_presenter_distribution_domain: str
-    mss_name: str 
+    dynamo_keys_table_name: str
+    dynamo_keys_partition_key: str
+    dynamo_keys_gsi1_name: str
+    dynamo_keys_gsi1_partition_key: str
+    dynamo_keys_gsi1_sort_key: str
+    mss_name: str
+    rds_cluster_arn: str
+    rds_secret_arn: str
+    s3_bucket_arn: str
+    s3_bucket_name: str
+    bedrock_role_arn: str
+    embedding_model_arn: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -40,7 +49,9 @@ class Environments:
         if "STAGE" not in os.environ or os.environ["STAGE"] == STAGE.DOTENV.value:
             self._configure_local()
 
-        self.stage = STAGE[os.environ.get("STAGE")]
+        # Corrigindo: converter para maiúsculo para corresponder ao enum
+        stage_value = os.environ.get("STAGE", "").upper()
+        self.stage = STAGE[stage_value]
         self.mss_name = os.environ.get("MSS_NAME")
         
         if self.stage == STAGE.TEST:
@@ -50,38 +61,54 @@ class Environments:
             self.dynamo_table_name = "user_mss_template-table"
             self.dynamo_partition_key = "PK"
             self.dynamo_sort_key = "SK"
-            self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
+            self.dynamo_keys_table_name = "keys-table-test"
+            self.dynamo_keys_partition_key = "PK"
+            self.dynamo_keys_gsi1_name = "GSI1"
+            self.dynamo_keys_gsi1_partition_key = "GSI1PK"
+            self.dynamo_keys_gsi1_sort_key = "GSI1SK"
 
         else:
-            self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
             self.region = os.environ.get("REGION")
             self.endpoint_url = os.environ.get("ENDPOINT_URL")
             self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
             self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
             self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
-            self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            self.dynamo_keys_table_name = os.environ.get("DYNAMO_KEYS_TABLE_NAME")
+            self.dynamo_keys_partition_key = os.environ.get("DYNAMO_KEYS_PARTITION_KEY")
+            self.dynamo_keys_gsi1_name = os.environ.get("DYNAMO_KEYS_GSI1_NAME")
+            self.dynamo_keys_gsi1_partition_key = os.environ.get("DYNAMO_KEYS_GSI1_PARTITION_KEY")
+            self.dynamo_keys_gsi1_sort_key = os.environ.get("DYNAMO_KEYS_GSI1_SORT_KEY")
+            self.rds_cluster_arn = os.environ.get("RDS_CLUSTER_ARN")
+            self.rds_secret_arn = os.environ.get("RDS_SECRET_ARN")
+            self.s3_bucket_arn = os.environ.get("S3_BUCKET_ARN")
+            self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
+            self.bedrock_role_arn = os.environ.get("BEDROCK_ROLE_ARN")
+            self.embedding_model_arn = os.environ.get("EMBEDDING_MODEL_ARN")
+
+
 
     @staticmethod
     def get_user_repo() -> IUserRepository:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-            return UserRepositoryMock
+            return UserRepositoryMock()
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
             from src.shared.infra.repositories.user_repository_dynamo import UserRepositoryDynamo
-            return UserRepositoryDynamo
+            return UserRepositoryDynamo()
         else:
             raise Exception("No repository found for this stage")
 
     @staticmethod
-    def get_observability() -> IObservability:
+    def get_keys_repo() -> IKeysRepository:
         if Environments.get_envs().stage == STAGE.TEST:
-            from src.shared.infra.external.observability.observability_mock import ObservabilityMock
-            return ObservabilityMock
+            from src.shared.infra.repositories.keys_repository_mock import KeysRepositoryMock
+            return KeysRepositoryMock()
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
-            from src.shared.infra.external.observability.observability_aws import ObservabilityAWS
-            return ObservabilityAWS
+            from src.shared.infra.repositories.keys_repository_dynamo import KeysRepositoryDynamo
+            return KeysRepositoryDynamo()
         else:
-            raise Exception("No observability class found for this stage")
+            raise Exception("No repository found for this stage")
+
     @staticmethod
     def get_envs() -> "Environments":
         """
@@ -95,4 +122,3 @@ class Environments:
 
     def __repr__(self):
         return self.__dict__
-

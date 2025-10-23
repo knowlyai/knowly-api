@@ -1,0 +1,25 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from src.controllers.knowledge_base import router as knowledge_base_router
+from src.controllers.chat import router as chat_router
+from src.controllers.user import router as auth_router
+
+app = FastAPI(
+    title="Knowly API",
+    description="API para gerenciamento de bases de conhecimento e usuários.",
+    version="1.0.0",
+)
+
+# Configuração de CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Em produção, especifique os domínios permitidos
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Routers
+app.include_router(knowledge_base_router)
+app.include_router(chat_router)
+app.include_router(auth_router)
