@@ -25,11 +25,12 @@ class CognitoStack(Construct):
             removal_policy=RemovalPolicy.DESTROY,
             self_sign_up_enabled=True,
             auto_verify=aws_cognito.AutoVerifiedAttrs(email=True),
-            email=aws_cognito.UserPoolEmail.with_ses(
-                from_email=FROM_EMAIL,
-                from_name=FROM_NAME,
-                ses_region=SES_REGION
-            ),
+            email=aws_cognito.UserPoolEmail.with_cognito(),
+            # email=aws_cognito.UserPoolEmail.with_ses(
+            #     from_email=FROM_EMAIL,
+            #     from_name=FROM_NAME,
+            #     ses_region=SES_REGION
+            # ),
             user_verification=aws_cognito.UserVerificationConfig(
                 email_subject="Bem vindo ao sistema de autenticação Knowly",
                 email_body=(
