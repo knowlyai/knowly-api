@@ -2,7 +2,7 @@ def send_email_presenter(event, context):
 
     user = event['request']['userAttributes']
     name = user['name'].split(' ')[0]
-    link = event['request']['codeParameter']
+    link = event['request']['linkParameter']
 
     print(event)
 

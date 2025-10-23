@@ -5,6 +5,9 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+SES_REGION = "us-east-1"
+FROM_EMAIL = "no-reply@seu-dominio.com"
+FROM_NAME  = "Knowly"
 
 class CognitoStack(Construct):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -22,7 +25,11 @@ class CognitoStack(Construct):
             removal_policy=RemovalPolicy.DESTROY,
             self_sign_up_enabled=True,
             auto_verify=aws_cognito.AutoVerifiedAttrs(email=True),
-            email=aws_cognito.UserPoolEmail.with_cognito(),
+            email=aws_cognito.UserPoolEmail.with_ses(
+                from_email=FROM_EMAIL,
+                from_name=FROM_NAME,
+                ses_region=SES_REGION
+            ),
             user_verification=aws_cognito.UserVerificationConfig(
                 email_subject="Bem vindo ao sistema de autenticação Knowly",
                 email_body=(
