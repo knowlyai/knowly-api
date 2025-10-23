@@ -182,7 +182,7 @@ class LambdaStack(Construct):
             runtime=lambda_.Runtime.PYTHON_3_13,
             layers=[self.lambda_layer],
             environment=environment_variables,
-            timeout=Duration.seconds(15),
+            timeout=Duration.seconds(30),
         )
 
         # Adiciona o recurso /chat no API Gateway separado
