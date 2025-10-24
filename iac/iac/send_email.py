@@ -362,9 +362,8 @@ def send_email_presenter(event, context):
         </html>
         """
 
-        # Replace {link} with Cognito's placeholder before formatting
-        message = message.replace('{link}', '{##Verify Email##}')
-        message = message.format(name=name)
+        # Format {name} first, then replace {link} with Cognito's placeholder
+        message = message.format(name=name, link='{##Verify Email##}')
 
         event["response"]["emailMessage"] = message
         event["response"]["emailSubject"] = 'Confirme seu cadastro - Knowly'
@@ -725,9 +724,8 @@ def send_email_presenter(event, context):
         </html>
         """
 
-        # Replace {link} with Cognito's placeholder before formatting
-        message = message.replace('{link}', '{##Reset Password##}')
-        message = message.format(name=name)
+        # Format {name} and {link} together
+        message = message.format(name=name, link='{##Reset Password##}')
 
         event["response"]["emailMessage"] = message
         event["response"]["emailSubject"] = 'Criar nova senha - Knowly'
