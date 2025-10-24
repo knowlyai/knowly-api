@@ -27,6 +27,7 @@ class BucketStack(Construct):
                 "https://dev.knowly.dev.br",
                 "https://hml.knowly.dev.br",
                 "https://knowly.dev.br",
+                "https://www.knowly.dev.br",
                 "http://localhost:3000"],
             allowed_headers=["*"],
             exposed_headers=["ETag"],
