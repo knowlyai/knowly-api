@@ -70,10 +70,6 @@ class IacStack(Stack):
                                                 bucket=self.bucket_stack.bucket,
                                                 stage=stage)
 
-        # Stack de acesso ao S3
-        self.s3_access_stack = S3AccessStack(self, f'knowly_s3_access_stack_{self.github_ref_name}',
-                                             bucket=self.bucket_stack.bucket)
-
         self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}', env=kwargs.get('env'))
 
         custom_message_function = lambda_.Function(
