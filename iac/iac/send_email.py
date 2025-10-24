@@ -289,9 +289,7 @@ def send_email_presenter(event, context):
         <tr>
         <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:15px;font-family:'Open Sans',sans-serif;" align="left">
         <div align="center">
-        <a href="{link}" target="_blank" style="box-sizing: border-box;display: inline-block;font-family:'Open Sans',sans-serif;text-decoration: none;-webkit-text-size-adjust: none;text-align: center;color: #FFFFFF; background-color: #000000; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; width:auto; max-width:100%; overflow-wrap: break-word; word-break: break-word; word-wrap:break-word; mso-border-alt: none;font-size: 14px;">
-        <span style="display:block;padding:10px 20px;line-height:120%;"><strong>Verificar Email</strong></span>
-        </a>
+        <div align="center">{link}</div>
         </div>
         </td>
         </tr>
