@@ -3,7 +3,7 @@ def send_email_presenter(event, context):
     user = event['request']['userAttributes']
     name = user['name'].split(' ')[0]
     code = event['request']['codeParameter']
-    link = event['request']['linkParameter']
+    link_token = event['request'].get('linkParameter') or '{##Click Here##}'
 
     print(event)
 
@@ -363,7 +363,7 @@ def send_email_presenter(event, context):
         """
 
         # Format {name} first, then replace {link} with Cognito's placeholder
-        message = message.format(name=name, link='{##Verify Email##}')
+        message = message.format(name=name, link=link_token)
 
         event["response"]["emailMessage"] = message
         event["response"]["emailSubject"] = 'Confirme seu cadastro - Knowly'
