@@ -1,10 +1,13 @@
 import os
 
 from aws_cdk import (
-    aws_cognito, RemovalPolicy
+    aws_cognito, RemovalPolicy, Duration
 )
 from constructs import Construct
 
+SES_REGION = "us-east-1"
+FROM_EMAIL = "knowly.dev.br"
+FROM_NAME  = "no-reply@knowly.dev.br"
 
 class CognitoStack(Construct):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -23,6 +26,11 @@ class CognitoStack(Construct):
             self_sign_up_enabled=True,
             auto_verify=aws_cognito.AutoVerifiedAttrs(email=True),
             email=aws_cognito.UserPoolEmail.with_cognito(),
+            # email=aws_cognito.UserPoolEmail.with_ses(
+            #     from_email=FROM_EMAIL,
+            #     from_name=FROM_NAME,
+            #     ses_region=SES_REGION
+            # ),
             user_verification=aws_cognito.UserVerificationConfig(
                 email_subject="Bem vindo ao sistema de autenticação Knowly",
                 email_body=(
@@ -55,4 +63,9 @@ class CognitoStack(Construct):
                 user_srp=True,
             ),
             generate_secret=False,
+            access_token_validity=Duration.hours(1),
+            id_token_validity=Duration.hours(1),
+            refresh_token_validity=Duration.days(7),
         )
+
+#redeploy
