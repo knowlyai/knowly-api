@@ -33,7 +33,6 @@ class CloudFrontStack(Construct):
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 compress=True,
             ),
-            price_class=cloudfront.PriceClass.PRICE_CLASS_100,  # Apenas América do Norte e Europa
             enabled=True,
             comment=f"Knowly Knowledge Base Files Distribution - {stage}",
         )
