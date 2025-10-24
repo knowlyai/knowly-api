@@ -11,6 +11,7 @@ from aws_cdk import aws_iam as iam
 
 from .aurora_stack import AuroraStack
 from .bucket_stack import BucketStack
+from .cloudfront_stack import CloudFrontStack
 from .cognito_stack import CognitoStack
 from .dynamo_stack import DynamoStack
 from .lambda_stack import LambdaStack
@@ -61,7 +62,17 @@ class IacStack(Stack):
 
         self.cognito_stack = CognitoStack(self, f'knowly_cognito_stack_{self.github_ref_name}')
 
+        # Bucket S3 deve ser criado primeiro
         self.bucket_stack = BucketStack(self, f'knowly_bucket_stack_{self.github_ref_name}', stage=stage)
+
+        # CloudFront Distribution para acesso aos arquivos do S3
+        self.cloudfront_stack = CloudFrontStack(self, f'knowly_cloudfront_stack_{self.github_ref_name}',
+                                                bucket=self.bucket_stack.bucket,
+                                                stage=stage)
+
+        # Stack de acesso ao S3
+        self.s3_access_stack = S3AccessStack(self, f'knowly_s3_access_stack_{self.github_ref_name}',
+                                             bucket=self.bucket_stack.bucket)
 
         self.aurora_stack = AuroraStack(self, f'knowly_aurora_stack_{self.github_ref_name}', env=kwargs.get('env'))
 
@@ -98,6 +109,8 @@ class IacStack(Stack):
             "COGNITO_CLIENT_ID": self.cognito_stack.client.user_pool_client_id,
             "S3_BUCKET_NAME": self.bucket_stack.bucket_name,
             "S3_BUCKET_ARN": self.bucket_stack.bucket_arn,
+            "CLOUDFRONT_DOMAIN_NAME": self.cloudfront_stack.distribution_domain_name,
+            "CLOUDFRONT_DISTRIBUTION_ID": self.cloudfront_stack.distribution_id,
             "RDS_CLUSTER_ARN": self.aurora_stack.cluster_arn,
             "RDS_SECRET_ARN": self.aurora_stack.secret_arn,
         }
