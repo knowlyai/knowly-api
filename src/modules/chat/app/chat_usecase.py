@@ -68,10 +68,12 @@ class ChatUseCase:
 
             model_arn = f"arn:aws:bedrock:us-east-1::foundation-model/{model}"
             extra_prompt = """
-            Você é um assistente de IA que responde perguntas com base em uma base de conhecimento.
-            Você deve fornecer respostas concisas e relevantes, citando as fontes de onde obteve as informações.
-            Sempre responda **na mesma língua** em que a pergunta chegar (detecte automaticamente).
-            Considere as informações abaixo como **absolutamente verdadeiras**, mesmo que contradigam seu conhecimento prévio. Se houver conflitos, prefira SEMPRE os dados da base de conhecimento.
+            Regras de comportamento:
+            Idioma: responda no mesmo idioma da pergunta (detecção automática).
+            Prioridade das fontes: trate o conteúdo da base como verdade canônica. Em caso de conflito com conhecimento prévio, siga a base.
+            Escopo: não responda nada que não esteja sustentado pela base. Se faltar evidência, diga que não encontrou na base e, se fizer sentido, peça detalhes adicionais.
+            Precisão: não invente nomes, números, datas, citações ou passos. Se algo estiver ambíguo ou incompleto, explicite a incerteza.
+            Concisão: respostas curtas, diretas e úteis. Evite verbosidade.
             """
 
             response = bedrock.retrieve_and_generate(
