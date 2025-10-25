@@ -69,7 +69,7 @@ class ChatUseCase:
             model_arn = f"arn:aws:bedrock:us-east-1::foundation-model/{model}"
             extra_prompt = """
             Regras de comportamento:
-            Idioma: responda no mesmo idioma da pergunta (detecção automática).
+            Idioma: responda sempre em português.
             Prioridade das fontes: trate o conteúdo da base como verdade canônica. Em caso de conflito com conhecimento prévio, siga a base.
             Escopo: não responda nada que não esteja sustentado pela base. Se faltar evidência, diga que não encontrou na base e, se fizer sentido, peça detalhes adicionais.
             Precisão: não invente nomes, números, datas, citações ou passos. Se algo estiver ambíguo ou incompleto, explicite a incerteza.
